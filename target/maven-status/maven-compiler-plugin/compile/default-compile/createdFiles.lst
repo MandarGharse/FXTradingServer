@@ -1,9 +1,0 @@
-com\fx\domain\CurrencyPairs.class
-com\fx\domain\FXTradesSubscriptionRequest.class
-com\fx\stomp\endpoints\SubscriptionEndPoints.class
-com\fx\ApplicationConfiguration.class
-com\fx\websocket\WebSocketConfig.class
-com\fx\Application.class
-com\fx\domain\CurrencyPair.class
-com\fx\websocket\SocketTextHandler.class
-com\fx\stomp\CurrencyPairListProvider.class
