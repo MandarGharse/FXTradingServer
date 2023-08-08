@@ -28,7 +28,7 @@ public class GreetingController {
             System.out.println("stompPrincipal >>> " + stompPrincipal);
             System.out.println("headers >>> " + headers);
 
-            return "Hello, " + greetingDto;
+            return greetingDto;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
