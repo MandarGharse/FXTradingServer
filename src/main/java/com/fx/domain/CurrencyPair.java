@@ -1,11 +1,6 @@
 
 package com.fx.domain;
 
-import java.util.HashMap;
-import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -21,8 +16,6 @@ public class CurrencyPair {
     private String ccypair;
     @JsonProperty("ccycode")
     private String ccycode;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * No args constructor for use in serialization
@@ -62,16 +55,6 @@ public class CurrencyPair {
         this.ccycode = ccycode;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -84,10 +67,6 @@ public class CurrencyPair {
         sb.append('=');
         sb.append(((this.ccycode == null)?"<null>":this.ccycode));
         sb.append(',');
-        sb.append("additionalProperties");
-        sb.append('=');
-        sb.append(((this.additionalProperties == null)?"<null>":this.additionalProperties));
-        sb.append(',');
         if (sb.charAt((sb.length()- 1)) == ',') {
             sb.setCharAt((sb.length()- 1), ']');
         } else {
@@ -99,7 +78,6 @@ public class CurrencyPair {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.additionalProperties == null)? 0 :this.additionalProperties.hashCode()));
         result = ((result* 31)+((this.ccypair == null)? 0 :this.ccypair.hashCode()));
         result = ((result* 31)+((this.ccycode == null)? 0 :this.ccycode.hashCode()));
         return result;
@@ -114,7 +92,7 @@ public class CurrencyPair {
             return false;
         }
         CurrencyPair rhs = ((CurrencyPair) other);
-        return ((((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties)))&&((this.ccypair == rhs.ccypair)||((this.ccypair!= null)&&this.ccypair.equals(rhs.ccypair))))&&((this.ccycode == rhs.ccycode)||((this.ccycode!= null)&&this.ccycode.equals(rhs.ccycode))));
+        return (((this.ccypair == rhs.ccypair)||((this.ccypair!= null)&&this.ccypair.equals(rhs.ccypair)))&&((this.ccycode == rhs.ccycode)||((this.ccycode!= null)&&this.ccycode.equals(rhs.ccycode))));
     }
 
 }

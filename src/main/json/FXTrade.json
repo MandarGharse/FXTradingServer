@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "fxTrades": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#definitions/fxTrade"
+      }
+    },
+    "fxTrade": {
+      "type": "object",
+      "properties": {
+        "tradeKey": {"type": "string"},
+        "tradeVersion": {"type": "string"},
+        "ccyPair": {"type": "string"},
+        "buySell": {"type": "string"},
+        "dealtCcy": {"type": "string"},
+        "dealtAmount": {"type": "string"},
+        "counterAmount": {"type": "string"}
+      }
+    }
+  }
+}

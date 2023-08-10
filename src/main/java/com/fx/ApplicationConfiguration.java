@@ -17,4 +17,7 @@ public class ApplicationConfiguration {
     @Value("${websocket.stomp-endpoint}")
     public String stompEndpoint;
 
+    @Value("${websocket.simple-broker-destination-prefixes}")
+    public String simple_broker_destination_prefixes;
+
 }

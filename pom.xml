@@ -14,7 +14,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <spring.version>6.0.11</spring.version>
         <jsonschema2pojo.version>1.0.1</jsonschema2pojo.version>
         <json.target.package>com.fx.domain</json.target.package>
-        <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <jackson.databind.version>2.13.2.2</jackson.databind.version>
+        <jackson.version>2.13.3</jackson.version>
     </properties>
 
     <dependencies>
@@ -47,10 +48,21 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>spring-messaging</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.google.code.gson</groupId>-->
-        <!--            <artifactId>gson</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.databind.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -74,7 +86,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <dependency>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-databind</artifactId>
-                        <version>${jackson-databind.version}</version>
+                        <version>${jackson.databind.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -91,7 +103,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <includeDynamicAccessors>true</includeDynamicAccessors>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <includeToString>true</includeToString>
-                    <includeAdditionalProperties>true</includeAdditionalProperties>
+                    <includeAdditionalProperties>false</includeAdditionalProperties>
                 </configuration>
                 <executions>
                     <execution>

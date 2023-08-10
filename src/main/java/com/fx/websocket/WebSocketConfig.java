@@ -1,6 +1,7 @@
 package com.fx.websocket;
 
 import com.fx.ApplicationConfiguration;
+import com.fx.service.StompHandshakeHandler;
 import com.fx.websocket.endpoints.SubscriptionEndPoints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +17,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer    {
     @Autowired
     ApplicationConfiguration config;
 
+    @Autowired
+    StompHandshakeHandler stompHandshakeHandler;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker(SubscriptionEndPoints.SIMPLE_BROKER_DESTINATION_PREFIXES);
+        registry.enableSimpleBroker(config.simple_broker_destination_prefixes.split(","));
         registry.setApplicationDestinationPrefixes(config.aplication_destination_prefixes);
         System.out.println("configured Message Broker");
     }
@@ -27,6 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer    {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint(config.stompEndpoint)
                 .setAllowedOrigins(config.allowed_origins.split(","))
+                .setHandshakeHandler(stompHandshakeHandler)
                 .withSockJS();
         System.out.println("WebSocketConfig configured StompEndpoints");
     }

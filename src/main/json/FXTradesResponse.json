@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "trades": {
+      "type": "array",
+      "items": {
+        "type": "fxTrade",
+        "$ref": "FXTrade.json/#definitions/fxTrade"
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "sessionId": {"type": "string"},
+    "startIndex": {"type": "integer"},
+    "endIndex": {"type": "integer"},
+    "status": {"type": "string"},
+    "rejectText": {"type": "string"},
+    "trades": {"$ref": "#definitions/trades"}
+  }
+}

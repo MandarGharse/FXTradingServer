@@ -4,47 +4,27 @@ import java.security.Principal;
 
 public class StompPrincipal implements Principal {
 
-    private String loginId;
     private String name;
-    private String sessionId;
+    private String userId;
 
-    public StompPrincipal(String loginId, String name, String sessionId) {
-        this.loginId = loginId;
+    public StompPrincipal(String name, String userId) {
         this.name = name;
-        this.sessionId = sessionId;
+        this.userId = userId;
     }
 
-    public String getLoginId() {
-        return loginId;
-    }
-
-    public void setLoginId(String loginId) {
-        this.loginId = loginId;
-    }
-
-    @Override
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public String getUserId() {
+        return userId;
     }
 
     @Override
     public String toString() {
         return "StompPrincipal{" +
-                "loginId='" + loginId + '\'' +
-                ", name='" + name + '\'' +
-                ", sessionId=" + sessionId +
+                "name='" + name + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 }
