@@ -1,11 +1,12 @@
 package com.fx.session;
 
-import com.fx.domain.FXTradesRequest;
+import com.fx.domain.json.FXTradesRequest;
+import com.fx.domain.json.FXTradesSubscriptionRequest;
 import com.fx.websocket.StompPrincipal;
 
 public class UserSession {
     StompPrincipal stompPrincipal;
-    FXTradesRequest fxTradesRequest;
+    FXTradesSubscriptionRequest fxTradesSubscriptionRequest;
 
     // Any other UserSession related data
 
@@ -13,16 +14,16 @@ public class UserSession {
         this.stompPrincipal = stompPrincipal;
     }
 
-
     @Override
     public String toString() {
         return "UserSession{" +
                 "stompPrincipal=" + stompPrincipal +
+                ", fxTradesSubscriptionRequest=" + fxTradesSubscriptionRequest +
                 '}';
     }
 
-    public void setFXTradesRequest(FXTradesRequest fxTradesRequest) {
-        this.fxTradesRequest = fxTradesRequest;
+    public void setFXTradesRequest(FXTradesSubscriptionRequest fxTradesSubscriptionRequest) {
+        this.fxTradesSubscriptionRequest = fxTradesSubscriptionRequest;
     }
 
 }

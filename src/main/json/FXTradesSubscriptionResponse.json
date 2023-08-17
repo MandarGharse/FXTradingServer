@@ -7,8 +7,10 @@
       "type": "string"
     },
     "type": {
-      "type": "string" // LIVE, HISTORICAL
-    }
+      "type": "string"
+    },
+    "status": {"type": "string"},
+    "rejectText": {"type": "string"}
   }
 
 }

@@ -1,7 +1,7 @@
 package com.fx.providers;
 
-import com.fx.domain.CurrencyPair;
-import com.fx.domain.CurrencyPairs;
+import com.fx.domain.json.CurrencyPair;
+import com.fx.domain.json.CurrencyPairs;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

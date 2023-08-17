@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package com.fx.proto.messaging;
+
+message Trade   {
+    string trade_key = 1;
+    uint64 trade_version = 2;
+    string ccy_pair = 3;
+
+    string buy_sell = 4;
+    string dealt_ccy = 5;
+    double dealt_amount = 6;
+    double counter_amount = 7;
+}
+
+message TradesSubscriptionRequestMessage{
+    string session_key = 1;
+}
+
+message TradesSubscriptionResponseMessage    {
+    string session_key = 1;
+    TradeSummary summary = 2;
+}
+
+message TradeSummary    {
+    uint32 total_trades = 1;
+    uint32 trades_valuedate_today = 2;
+    uint32 trades_tradedate_today = 3;
+}
