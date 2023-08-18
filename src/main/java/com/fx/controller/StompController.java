@@ -1,14 +1,14 @@
 package com.fx.controller;
 
-import com.fx.ApplicationConfiguration;
+import com.fx.common.ApplicationConfiguration;
 import com.fx.domain.json.*;
-import com.fx.handlers.FXTradesRequestHandler;
-import com.fx.service.StompEnhancedMessageSender;
-import com.fx.session.UserSession;
-import com.fx.session.UserSessionManager;
-import com.fx.utils.ObjectMapperUtil;
-import com.fx.websocket.StompPrincipal;
-import com.fx.websocket.endpoints.SubscriptionEndPoints;
+import com.fx.client.handlers.FXTradesRequestHandler;
+import com.fx.client.service.StompEnhancedMessageSender;
+import com.fx.client.session.UserSession;
+import com.fx.client.session.UserSessionManager;
+import com.fx.common.utils.ObjectMapperUtil;
+import com.fx.client.websocket.StompPrincipal;
+import com.fx.client.websocket.endpoints.SubscriptionEndPoints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,7 +17,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
-import static com.fx.websocket.endpoints.SubscriptionEndPoints.*;
+import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.BOOKING_ENDPOINT;
+import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT;
 
 @Controller
 public class StompController {
@@ -41,7 +42,7 @@ public class StompController {
             System.out.printf("trade " + ObjectMapperUtil.objectMapper.writeValueAsString(trade));
 
             stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-                    ObjectMapperUtil.objectMapper.writeValueAsString(trade), SubscriptionEndPoints.BOOKING_ENDPOINT);
+                    ObjectMapperUtil.objectMapper.writeValueAsString(trade), BOOKING_ENDPOINT);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -65,7 +66,7 @@ public class StompController {
                 fxTradesSubscriptionResponse.setStatus("NACK");
                 fxTradesSubscriptionResponse.setRejectText("Invalid sessionId " + fxTradesSubscriptionRequest.getSessionId() + ". not found");
                 stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-                        ObjectMapperUtil.objectMapper.writeValueAsString(fxTradesSubscriptionResponse), SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT);
+                        ObjectMapperUtil.objectMapper.writeValueAsString(fxTradesSubscriptionResponse), FXTRADES_SUBSCRIPTION_ENDPOINT);
                 return;
             }
             userSession.setFXTradesRequest(fxTradesSubscriptionRequest);
