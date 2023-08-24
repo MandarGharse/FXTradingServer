@@ -8,11 +8,10 @@ import com.fx.client.session.UserSession;
 import com.fx.client.session.UserSessionManager;
 import com.fx.common.utils.ObjectMapperUtil;
 import com.fx.client.websocket.StompPrincipal;
-import com.fx.client.websocket.endpoints.SubscriptionEndPoints;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Headers;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
@@ -107,5 +106,12 @@ public class StompController {
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+    @MessageExceptionHandler
+    @SendToUser("/queue/errors")
+    public String handleException(Throwable exception) {
+        System.out.println("Exception : " + exception);
+        return exception.getMessage();
+    }
 
 }

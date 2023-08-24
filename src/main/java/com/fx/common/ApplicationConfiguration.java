@@ -22,9 +22,9 @@ public class ApplicationConfiguration {
     public String simple_broker_destination_prefixes;
 
     @Value("${grpc.hostname}")
-    public String grpc_hostname;
+    public String grpcHostname;
 
     @Value("${grpc.port}")
-    public int grpc_port;
+    public int grpcPort;
 
 }

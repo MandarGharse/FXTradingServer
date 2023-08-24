@@ -26,10 +26,13 @@ public class FXTradesRequestHandler {
             .omittingInsignificantWhitespace();
 
     public void onFXTradesSubscriptionRequest(FXTradesSubscriptionRequest fxTradesSubscriptionRequest, StompPrincipal stompPrincipal) throws JsonProcessingException {
-        System.out.println("processing FXTradesSubscriptionRequest " + fxTradesSubscriptionRequest);
+        System.out.println("processing fxTradesSubscriptionRequest " + fxTradesSubscriptionRequest);
+
+        //ObjectMapperUtil.objectMapper.writeValueAsString(tradesSubscriptionResponseMessage
 
         // GRPC subscription
         GrpcClientManager.GrpcClient grpcClient = GrpcClientManager.getGrpcClient(GrpcClientId.TRADES);
+        System.out.println("retrieved grpc client handle for fxTradesSubscriptionRequest " + fxTradesSubscriptionRequest);
         StreamObserver<TradeMessages.TradesSubscriptionResponseMessage> subscriptionRequestMessageStreamObserver =
                 new StreamObserver<>() {
                     @Override
@@ -37,11 +40,11 @@ public class FXTradesRequestHandler {
                         System.out.println("onNext:TradesSubscriptionResponseMessage " + tradesSubscriptionResponseMessage);
                         try {
                             String jsonMessageString = jsonPrinter.print(tradesSubscriptionResponseMessage);
+                            System.out.println("jsonMessageString : " + jsonMessageString);
                             stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-                                    ObjectMapperUtil.objectMapper.writeValueAsString(tradesSubscriptionResponseMessage),
+                                    jsonMessageString,
                                     SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT);
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
+                            System.out.println("message sent to sessionId : " + stompPrincipal.getName());
                         } catch (InvalidProtocolBufferException e) {
                             throw new RuntimeException(e);
                         }
@@ -58,7 +61,9 @@ public class FXTradesRequestHandler {
                     }
                 };
 
+        System.out.println("invoking grpc server for fxTradesSubscriptionRequest " + fxTradesSubscriptionRequest);
         invokeGrpc(grpcClient.getAsyncTradeServicesStub(), subscriptionRequestMessageStreamObserver);
+        System.out.println("invoked grpc server for fxTradesSubscriptionRequest " + fxTradesSubscriptionRequest);
 
 //        List<FxTrade> fxTrades = new ArrayList<>();
 //        fxTrades.add(new FxTrade("111", "1", "EURUSD", "BUY", "EUR", "1000", "1234.56"));

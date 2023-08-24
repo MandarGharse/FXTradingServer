@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer    {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker(config.simple_broker_destination_prefixes.split(","));
         registry.setApplicationDestinationPrefixes(config.aplication_destination_prefixes);
-        System.out.println("configured Message Broker");
+        System.out.println("configured Message Broker with enableSimpleBroker");
     }
 
     @Override

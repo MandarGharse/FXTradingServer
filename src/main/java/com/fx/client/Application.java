@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
-@ImportResource("classpath:META-INF\\spring\\spring-context.xml")
+@PropertySource(value = {"file:///${HOMEDIR}/application.client.properties"})
+@ImportResource("classpath:META-INF\\spring\\client\\spring-context.xml")
 @PropertySource({
         "classpath:environment-independent.properties"
 })
@@ -15,6 +16,7 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+        System.out.println("Web server started!!!");
     }
 
 }
