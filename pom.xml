@@ -18,6 +18,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <jackson.version>2.13.3</jackson.version>
         <grpc.version>1.34.0</grpc.version>
         <protobuf.version>3.14.0</protobuf.version>
+        <rxjava.version>2.2.19</rxjava.version>
         <argLine />
     </properties>
 
@@ -118,6 +119,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <groupId>org.xolstice.maven.plugins</groupId>
             <artifactId>protobuf-maven-plugin</artifactId>
             <version>0.6.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava.version}</version>
         </dependency>
 
     </dependencies>

@@ -6,7 +6,6 @@ message Trade   {
     string trade_key = 1;
     uint64 trade_version = 2;
     string ccy_pair = 3;
-
     string buy_sell = 4;
     string dealt_ccy = 5;
     double dealt_amount = 6;
@@ -20,6 +19,7 @@ message TradesSubscriptionRequestMessage{
 message TradesSubscriptionResponseMessage    {
     string session_key = 1;
     TradeSummary summary = 2;
+    repeated Trade trades = 3;
 }
 
 message TradeSummary    {

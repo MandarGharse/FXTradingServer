@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GrpcClientManager {
-
     static final Map<GrpcClientId, GrpcClient> grpcClientMap = new HashMap<>();
 
     public GrpcClientManager(GrpcClientId grpcClientId, String hostname, int port) {

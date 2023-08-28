@@ -1845,6 +1845,30 @@ public final class TradeMessages {
      * <code>.com.fx.proto.messaging.TradeSummary summary = 2;</code>
      */
     com.fx.proto.messaging.TradeMessages.TradeSummaryOrBuilder getSummaryOrBuilder();
+
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    java.util.List<com.fx.proto.messaging.TradeMessages.Trade> 
+        getTradesList();
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    com.fx.proto.messaging.TradeMessages.Trade getTrades(int index);
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    int getTradesCount();
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    java.util.List<? extends com.fx.proto.messaging.TradeMessages.TradeOrBuilder> 
+        getTradesOrBuilderList();
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    com.fx.proto.messaging.TradeMessages.TradeOrBuilder getTradesOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code com.fx.proto.messaging.TradesSubscriptionResponseMessage}
@@ -1860,6 +1884,7 @@ public final class TradeMessages {
     }
     private TradesSubscriptionResponseMessage() {
       sessionKey_ = "";
+      trades_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -1882,6 +1907,7 @@ public final class TradeMessages {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -1911,6 +1937,15 @@ public final class TradeMessages {
 
               break;
             }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                trades_ = new java.util.ArrayList<com.fx.proto.messaging.TradeMessages.Trade>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              trades_.add(
+                  input.readMessage(com.fx.proto.messaging.TradeMessages.Trade.parser(), extensionRegistry));
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -1926,6 +1961,9 @@ public final class TradeMessages {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          trades_ = java.util.Collections.unmodifiableList(trades_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -2007,6 +2045,46 @@ public final class TradeMessages {
       return getSummary();
     }
 
+    public static final int TRADES_FIELD_NUMBER = 3;
+    private java.util.List<com.fx.proto.messaging.TradeMessages.Trade> trades_;
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.fx.proto.messaging.TradeMessages.Trade> getTradesList() {
+      return trades_;
+    }
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.fx.proto.messaging.TradeMessages.TradeOrBuilder> 
+        getTradesOrBuilderList() {
+      return trades_;
+    }
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    @java.lang.Override
+    public int getTradesCount() {
+      return trades_.size();
+    }
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    @java.lang.Override
+    public com.fx.proto.messaging.TradeMessages.Trade getTrades(int index) {
+      return trades_.get(index);
+    }
+    /**
+     * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+     */
+    @java.lang.Override
+    public com.fx.proto.messaging.TradeMessages.TradeOrBuilder getTradesOrBuilder(
+        int index) {
+      return trades_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2027,6 +2105,9 @@ public final class TradeMessages {
       if (summary_ != null) {
         output.writeMessage(2, getSummary());
       }
+      for (int i = 0; i < trades_.size(); i++) {
+        output.writeMessage(3, trades_.get(i));
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2042,6 +2123,10 @@ public final class TradeMessages {
       if (summary_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getSummary());
+      }
+      for (int i = 0; i < trades_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, trades_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2065,6 +2150,8 @@ public final class TradeMessages {
         if (!getSummary()
             .equals(other.getSummary())) return false;
       }
+      if (!getTradesList()
+          .equals(other.getTradesList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -2081,6 +2168,10 @@ public final class TradeMessages {
       if (hasSummary()) {
         hash = (37 * hash) + SUMMARY_FIELD_NUMBER;
         hash = (53 * hash) + getSummary().hashCode();
+      }
+      if (getTradesCount() > 0) {
+        hash = (37 * hash) + TRADES_FIELD_NUMBER;
+        hash = (53 * hash) + getTradesList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2210,6 +2301,7 @@ public final class TradeMessages {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getTradesFieldBuilder();
         }
       }
       @java.lang.Override
@@ -2222,6 +2314,12 @@ public final class TradeMessages {
         } else {
           summary_ = null;
           summaryBuilder_ = null;
+        }
+        if (tradesBuilder_ == null) {
+          trades_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          tradesBuilder_.clear();
         }
         return this;
       }
@@ -2249,11 +2347,21 @@ public final class TradeMessages {
       @java.lang.Override
       public com.fx.proto.messaging.TradeMessages.TradesSubscriptionResponseMessage buildPartial() {
         com.fx.proto.messaging.TradeMessages.TradesSubscriptionResponseMessage result = new com.fx.proto.messaging.TradeMessages.TradesSubscriptionResponseMessage(this);
+        int from_bitField0_ = bitField0_;
         result.sessionKey_ = sessionKey_;
         if (summaryBuilder_ == null) {
           result.summary_ = summary_;
         } else {
           result.summary_ = summaryBuilder_.build();
+        }
+        if (tradesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            trades_ = java.util.Collections.unmodifiableList(trades_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.trades_ = trades_;
+        } else {
+          result.trades_ = tradesBuilder_.build();
         }
         onBuilt();
         return result;
@@ -2310,6 +2418,32 @@ public final class TradeMessages {
         if (other.hasSummary()) {
           mergeSummary(other.getSummary());
         }
+        if (tradesBuilder_ == null) {
+          if (!other.trades_.isEmpty()) {
+            if (trades_.isEmpty()) {
+              trades_ = other.trades_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureTradesIsMutable();
+              trades_.addAll(other.trades_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.trades_.isEmpty()) {
+            if (tradesBuilder_.isEmpty()) {
+              tradesBuilder_.dispose();
+              tradesBuilder_ = null;
+              trades_ = other.trades_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              tradesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getTradesFieldBuilder() : null;
+            } else {
+              tradesBuilder_.addAllMessages(other.trades_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -2338,6 +2472,7 @@ public final class TradeMessages {
         }
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object sessionKey_ = "";
       /**
@@ -2532,6 +2667,246 @@ public final class TradeMessages {
           summary_ = null;
         }
         return summaryBuilder_;
+      }
+
+      private java.util.List<com.fx.proto.messaging.TradeMessages.Trade> trades_ =
+        java.util.Collections.emptyList();
+      private void ensureTradesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          trades_ = new java.util.ArrayList<com.fx.proto.messaging.TradeMessages.Trade>(trades_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.fx.proto.messaging.TradeMessages.Trade, com.fx.proto.messaging.TradeMessages.Trade.Builder, com.fx.proto.messaging.TradeMessages.TradeOrBuilder> tradesBuilder_;
+
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public java.util.List<com.fx.proto.messaging.TradeMessages.Trade> getTradesList() {
+        if (tradesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(trades_);
+        } else {
+          return tradesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public int getTradesCount() {
+        if (tradesBuilder_ == null) {
+          return trades_.size();
+        } else {
+          return tradesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public com.fx.proto.messaging.TradeMessages.Trade getTrades(int index) {
+        if (tradesBuilder_ == null) {
+          return trades_.get(index);
+        } else {
+          return tradesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder setTrades(
+          int index, com.fx.proto.messaging.TradeMessages.Trade value) {
+        if (tradesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTradesIsMutable();
+          trades_.set(index, value);
+          onChanged();
+        } else {
+          tradesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder setTrades(
+          int index, com.fx.proto.messaging.TradeMessages.Trade.Builder builderForValue) {
+        if (tradesBuilder_ == null) {
+          ensureTradesIsMutable();
+          trades_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          tradesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder addTrades(com.fx.proto.messaging.TradeMessages.Trade value) {
+        if (tradesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTradesIsMutable();
+          trades_.add(value);
+          onChanged();
+        } else {
+          tradesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder addTrades(
+          int index, com.fx.proto.messaging.TradeMessages.Trade value) {
+        if (tradesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTradesIsMutable();
+          trades_.add(index, value);
+          onChanged();
+        } else {
+          tradesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder addTrades(
+          com.fx.proto.messaging.TradeMessages.Trade.Builder builderForValue) {
+        if (tradesBuilder_ == null) {
+          ensureTradesIsMutable();
+          trades_.add(builderForValue.build());
+          onChanged();
+        } else {
+          tradesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder addTrades(
+          int index, com.fx.proto.messaging.TradeMessages.Trade.Builder builderForValue) {
+        if (tradesBuilder_ == null) {
+          ensureTradesIsMutable();
+          trades_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          tradesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder addAllTrades(
+          java.lang.Iterable<? extends com.fx.proto.messaging.TradeMessages.Trade> values) {
+        if (tradesBuilder_ == null) {
+          ensureTradesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, trades_);
+          onChanged();
+        } else {
+          tradesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder clearTrades() {
+        if (tradesBuilder_ == null) {
+          trades_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          tradesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public Builder removeTrades(int index) {
+        if (tradesBuilder_ == null) {
+          ensureTradesIsMutable();
+          trades_.remove(index);
+          onChanged();
+        } else {
+          tradesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public com.fx.proto.messaging.TradeMessages.Trade.Builder getTradesBuilder(
+          int index) {
+        return getTradesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public com.fx.proto.messaging.TradeMessages.TradeOrBuilder getTradesOrBuilder(
+          int index) {
+        if (tradesBuilder_ == null) {
+          return trades_.get(index);  } else {
+          return tradesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public java.util.List<? extends com.fx.proto.messaging.TradeMessages.TradeOrBuilder> 
+           getTradesOrBuilderList() {
+        if (tradesBuilder_ != null) {
+          return tradesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(trades_);
+        }
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public com.fx.proto.messaging.TradeMessages.Trade.Builder addTradesBuilder() {
+        return getTradesFieldBuilder().addBuilder(
+            com.fx.proto.messaging.TradeMessages.Trade.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public com.fx.proto.messaging.TradeMessages.Trade.Builder addTradesBuilder(
+          int index) {
+        return getTradesFieldBuilder().addBuilder(
+            index, com.fx.proto.messaging.TradeMessages.Trade.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .com.fx.proto.messaging.Trade trades = 3;</code>
+       */
+      public java.util.List<com.fx.proto.messaging.TradeMessages.Trade.Builder> 
+           getTradesBuilderList() {
+        return getTradesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.fx.proto.messaging.TradeMessages.Trade, com.fx.proto.messaging.TradeMessages.Trade.Builder, com.fx.proto.messaging.TradeMessages.TradeOrBuilder> 
+          getTradesFieldBuilder() {
+        if (tradesBuilder_ == null) {
+          tradesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              com.fx.proto.messaging.TradeMessages.Trade, com.fx.proto.messaging.TradeMessages.Trade.Builder, com.fx.proto.messaging.TradeMessages.TradeOrBuilder>(
+                  trades_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          trades_ = null;
+        }
+        return tradesBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -3249,13 +3624,14 @@ public final class TradeMessages {
       "\022\020\n\010ccy_pair\030\003 \001(\t\022\020\n\010buy_sell\030\004 \001(\t\022\021\n\t" +
       "dealt_ccy\030\005 \001(\t\022\024\n\014dealt_amount\030\006 \001(\001\022\026\n" +
       "\016counter_amount\030\007 \001(\001\"7\n TradesSubscript" +
-      "ionRequestMessage\022\023\n\013session_key\030\001 \001(\t\"o" +
-      "\n!TradesSubscriptionResponseMessage\022\023\n\013s" +
-      "ession_key\030\001 \001(\t\0225\n\007summary\030\002 \001(\0132$.com." +
-      "fx.proto.messaging.TradeSummary\"d\n\014Trade" +
-      "Summary\022\024\n\014total_trades\030\001 \001(\r\022\036\n\026trades_" +
-      "valuedate_today\030\002 \001(\r\022\036\n\026trades_tradedat" +
-      "e_today\030\003 \001(\rb\006proto3"
+      "ionRequestMessage\022\023\n\013session_key\030\001 \001(\t\"\236" +
+      "\001\n!TradesSubscriptionResponseMessage\022\023\n\013" +
+      "session_key\030\001 \001(\t\0225\n\007summary\030\002 \001(\0132$.com" +
+      ".fx.proto.messaging.TradeSummary\022-\n\006trad" +
+      "es\030\003 \003(\0132\035.com.fx.proto.messaging.Trade\"" +
+      "d\n\014TradeSummary\022\024\n\014total_trades\030\001 \001(\r\022\036\n" +
+      "\026trades_valuedate_today\030\002 \001(\r\022\036\n\026trades_" +
+      "tradedate_today\030\003 \001(\rb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -3278,7 +3654,7 @@ public final class TradeMessages {
     internal_static_com_fx_proto_messaging_TradesSubscriptionResponseMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_fx_proto_messaging_TradesSubscriptionResponseMessage_descriptor,
-        new java.lang.String[] { "SessionKey", "Summary", });
+        new java.lang.String[] { "SessionKey", "Summary", "Trades", });
     internal_static_com_fx_proto_messaging_TradeSummary_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_com_fx_proto_messaging_TradeSummary_fieldAccessorTable = new

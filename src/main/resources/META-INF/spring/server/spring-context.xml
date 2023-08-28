@@ -14,4 +14,7 @@
     <bean id="applicationConfiguration" class="com.fx.common.ApplicationConfiguration">
     </bean>
 
+    <bean id="tradesListener" class="com.fx.server.listener.TradesListener" init-method="init">
+    </bean>
+
 </beans>
