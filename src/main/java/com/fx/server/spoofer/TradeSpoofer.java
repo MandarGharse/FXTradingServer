@@ -1,6 +1,7 @@
 package com.fx.server.spoofer;
 
 import com.fx.proto.messaging.TradeMessages;
+import com.fx.server.listener.TradesListener;
 
 import java.util.Random;
 
@@ -8,6 +9,10 @@ public class TradeSpoofer {
 
     static String[] ccyPairs = new String[] {"EUR/USD", "USD/JPY", "EUR/JPY", "EUR/GBP", "USD/MXN", "USD/INR", "EUR/NOK"};
     static String[] buySells = new String[] {"Buy", "Sell"};
+
+    public void init()  {
+        TradesListener.getInstance();   // This will start the trade spoofer to simulate incomming trades
+    }
 
     public static TradeMessages.Trade spoofTrade() {
         Random random = new Random();

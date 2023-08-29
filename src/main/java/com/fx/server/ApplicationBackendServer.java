@@ -18,13 +18,13 @@ import java.io.IOException;
         "classpath:environment-independent.properties"
 })
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class})
-public class Application implements CommandLineRunner {
+public class ApplicationBackendServer implements CommandLineRunner {
 
     @Autowired
     GrpcServer server;
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ApplicationBackendServer.class, args);
     }
 
     @Override

@@ -12,10 +12,10 @@ import org.springframework.context.annotation.PropertySource;
         "classpath:environment-independent.properties"
 })
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
-public class Application {
+public class ApplicationGatewayServer {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ApplicationGatewayServer.class, args);
         System.out.println("Web server started!!!");
     }
 

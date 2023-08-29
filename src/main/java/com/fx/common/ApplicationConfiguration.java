@@ -6,7 +6,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Configuration
-@PropertySource("classpath:environment-independent.properties")
 public class ApplicationConfiguration {
 
     @Value("${websocket.allowed-origins}")

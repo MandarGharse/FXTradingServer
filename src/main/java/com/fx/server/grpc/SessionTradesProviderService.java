@@ -1,6 +1,5 @@
 package com.fx.server.grpc;
 
-import com.fx.domain.json.TradesSubscriptionRequestMessage;
 import com.fx.proto.messaging.TradeMessages;
 import com.fx.server.listener.TradesListener;
 import io.grpc.stub.StreamObserver;
@@ -12,34 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Component
-public class TradesProviderService implements StreamObserver<TradeMessages.TradesSubscriptionRequestMessage>, Disposable {
+public class SessionTradesProviderService implements StreamObserver<TradeMessages.TradesSubscriptionRequestMessage>, Disposable {
 
     StreamObserver<TradeMessages.TradesSubscriptionResponseMessage> outStream;
     TradeMessages.TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage;
 
     List<TradeMessages.Trade> tradesList = new ArrayList<>();
 
-    @Autowired
-    TradesListener tradesListener;
-
     private boolean isDisposed = false;
 
-    public TradesProviderService() {
+    public SessionTradesProviderService(StreamObserver<TradeMessages.TradesSubscriptionResponseMessage> responseObserver) {
         super();
-    }
-
-    public void initialize(StreamObserver<TradeMessages.TradesSubscriptionResponseMessage> responseObserver) {
         this.outStream = responseObserver;
     }
 
     public io.grpc.stub.StreamObserver<com.fx.proto.messaging.TradeMessages.TradesSubscriptionRequestMessage> subscribeTrades(
             io.grpc.stub.StreamObserver<com.fx.proto.messaging.TradeMessages.TradesSubscriptionResponseMessage> responseObserver) {
 
-
         AtomicInteger total_trades_count = new AtomicInteger(0);
 
-        tradesListener.getTradeSubject().subscribe(tradeObj -> {
+        TradesListener.getInstance().getTradeSubject().subscribe(tradeObj -> {
                     TradeMessages.Trade trade = (TradeMessages.Trade) tradeObj;
                     tradesList.add(trade);
                     TradeMessages.TradesSubscriptionResponseMessage tradesSubscriptionResponseMessage =
@@ -58,7 +49,7 @@ public class TradesProviderService implements StreamObserver<TradeMessages.Trade
                 }
         );
 
-        return new TradesProviderService();
+        return new SessionTradesProviderService(outStream);
 
     }
 

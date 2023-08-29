@@ -19,6 +19,18 @@ public class TradesListener {
 
     static Subject<Object> tradeSubject = PublishSubject.create().toSerialized();
 
+    static TradesListener instance = null;
+
+    private TradesListener()    {}
+
+    public static TradesListener getInstance() {
+        if (instance == null){
+            instance = new TradesListener();
+            instance.init();
+        }
+        return instance;
+    }
+
     public void init()    {
         System.out.println("instance #" + this.hashCode());
         processIncommingTrade();
