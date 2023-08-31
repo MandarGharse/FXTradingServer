@@ -5,7 +5,6 @@ import com.fx.server.cache.TradesCache;
 import com.fx.server.spoofer.TradeSpoofer;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
-import org.springframework.stereotype.Component;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,20 +32,22 @@ public class TradesListener {
 
     public void init()    {
         System.out.println("instance #" + this.hashCode());
-        processIncommingTrade();
-    }
 
-    private static void processIncommingTrade() {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 TradeMessages.Trade trade = TradeSpoofer.spoofTrade();
-                TradesCache.getInstance().putItem(trade);
-                tradeSubject.onNext(trade);
+                onMessage(trade);
             }
         };
         Timer timer = new Timer("TradeEvent");
         timer.scheduleAtFixedRate(timerTask, 0, 5*1000);
+    }
+
+    // process live trade event
+    private static void onMessage(TradeMessages.Trade trade) {
+        TradesCache.getInstance().putItem(trade);
+        tradeSubject.onNext(trade);
     }
 
     public Subject<Object> getTradeSubject() {

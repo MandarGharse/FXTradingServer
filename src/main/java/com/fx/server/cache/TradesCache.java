@@ -1,6 +1,7 @@
 package com.fx.server.cache;
 
 import com.fx.proto.messaging.TradeMessages;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +16,10 @@ public class TradesCache {
 
     public static TradesCache getInstance()   {
         return instance;
+    }
+
+    public synchronized Map<String, TradeMessages.Trade> getTradesCache() {
+        return ImmutableMap.copyOf(tradesCache);
     }
 
     public void putItem(TradeMessages.Trade trade) {

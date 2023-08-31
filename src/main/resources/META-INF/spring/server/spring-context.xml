@@ -17,4 +17,7 @@
     <bean id="tradeSpoofer" class="com.fx.server.spoofer.TradeSpoofer" init-method="init">
     </bean>
 
+    <bean id="coldBoot" class="com.fx.server.cache.ColdBoot">
+    </bean>
+
 </beans>

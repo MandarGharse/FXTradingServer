@@ -3,6 +3,7 @@ package com.fx.server.grpc;
 import com.fx.common.enums.KPILabel;
 import com.fx.common.utils.DateUtils;
 import com.fx.proto.messaging.TradeMessages;
+import com.fx.server.cache.TradesCache;
 import com.fx.server.listener.TradesListener;
 import io.grpc.stub.StreamObserver;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
@@ -24,30 +25,6 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
         super();
         this.outStream = responseObserver;
     }
-
-//    public io.grpc.stub.StreamObserver<com.fx.proto.messaging.TradeMessages.PortfolioSubscriptionRequestMessage> subscribeTrades(
-//            StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> responseObserver) {
-//
-//        AtomicInteger total_trades_count = new AtomicInteger(0);
-//
-//        TradesListener.getInstance().getTradeSubject().subscribe(tradeObj -> {
-//                    TradeMessages.Trade trade = (TradeMessages.Trade) tradeObj;
-//                    tradesList.add(trade);
-//                    TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
-//                            TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-//                                    .setBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionResponse.newBuilder()
-//                                            .setSuccess(true)).build();
-//                    responseObserver.onNext(portfolioSubscriptionResponseMessage);
-//                    System.out.println("published portfolioSubscriptionResponseMessage for responseObserver " + responseObserver.hashCode() + ". total trades : " + total_trades_count.get());
-//                },
-//                onError -> {
-//                    System.out.println("error " + onError);
-//                }
-//        );
-//
-//        return new SessionTradesProviderService(outStream);
-//
-//    }
 
     @Override
     public void onNext(TradeMessages.PortfolioSubscriptionRequestMessage portfolioSubscriptionRequestMessage) {
@@ -79,9 +56,18 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
     private void onNext(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest) {
         System.out.println("processing blotterSubscriptionRequest " + blotterSubscriptionRequest);
 
+        // TODO : only pull based on Criteria/filter
+        List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
+        tradesList.clear();
+        tradesList.addAll(tradesListtemp);
+
+        sendSnapshot();
+
         TradesListener.getInstance().getTradeSubject().subscribe(tradeObj -> {
                     TradeMessages.Trade trade = (TradeMessages.Trade) tradeObj;
+                    System.out.println("adding to cache...");
                     tradesList.add(trade);
+                    System.out.println("added to cache");
 
                     TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                             TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
@@ -99,6 +85,18 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
                 }
         );
 
+    }
+
+    private void sendSnapshot() {
+        TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
+                TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
+                        .setBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionResponse.newBuilder()
+                                .setSummaryResponse(TradeMessages.SummaryResponse.newBuilder()
+                                        .addSummary(buildKPIList(tradesList))
+                                        .build())
+                                .setSuccess(true)).build();
+        outStream.onNext(portfolioSubscriptionResponseMessage);
+        System.out.println("snapshot sent to responseObserver " + outStream.hashCode());
     }
 
     private TradeMessages.SummaryList buildKPIList(List<TradeMessages.Trade> tradesList) {
