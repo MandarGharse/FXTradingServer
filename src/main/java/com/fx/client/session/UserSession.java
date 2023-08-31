@@ -1,11 +1,13 @@
 package com.fx.client.session;
 
 import com.fx.client.websocket.StompPrincipal;
-import com.fx.domain.json.FXTradesSubscriptionRequest;
+import com.fx.domain.json.BlotterSubscriptionRequestMessage;
+import com.fx.domain.json.TradesSubscriptionRequestMessage;
 
 public class UserSession {
     StompPrincipal stompPrincipal;
-    FXTradesSubscriptionRequest fxTradesSubscriptionRequest;
+    TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage;
+    BlotterSubscriptionRequestMessage blotterSubscriptionRequestMessage;
 
     // Any other UserSession related data
 
@@ -17,12 +19,16 @@ public class UserSession {
     public String toString() {
         return "UserSession{" +
                 "stompPrincipal=" + stompPrincipal +
-                ", fxTradesSubscriptionRequest=" + fxTradesSubscriptionRequest +
+                ", tradesSubscriptionRequestMessage=" + tradesSubscriptionRequestMessage +
+                ", blotterSubscriptionRequestMessage=" + blotterSubscriptionRequestMessage +
                 '}';
     }
 
-    public void setFXTradesRequest(FXTradesSubscriptionRequest fxTradesSubscriptionRequest) {
-        this.fxTradesSubscriptionRequest = fxTradesSubscriptionRequest;
+    public void setFXTradesRequest(TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage) {
+        this.tradesSubscriptionRequestMessage = tradesSubscriptionRequestMessage;
     }
 
+    public void setBlotterSubscriptionRequest(BlotterSubscriptionRequestMessage blotterSubscriptionRequestMessage) {
+        this.blotterSubscriptionRequestMessage = blotterSubscriptionRequestMessage;
+    }
 }

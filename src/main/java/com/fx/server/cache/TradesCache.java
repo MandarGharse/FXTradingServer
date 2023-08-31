@@ -18,11 +18,11 @@ public class TradesCache {
     }
 
     public void putItem(TradeMessages.Trade trade) {
-        if (Objects.isNull(trade.getTradeKey()))    {
-            System.out.println("Failed to write to TradesCache. Invalid key for trade " + trade);
+        if (Objects.isNull(trade.getTradeKeyVersion()))    {
+            System.out.println("Failed to write to TradesCache. Invalid key " + trade.getTradeKeyVersion() + " for trade " + trade);
             return;
         }
-        tradesCache.put(trade.getTradeKey(), trade);
+        tradesCache.put(trade.getTradeKeyVersion().getTradeKey(), trade);
         System.out.println("cache size after adding item " + tradesCache.size());
     }
 

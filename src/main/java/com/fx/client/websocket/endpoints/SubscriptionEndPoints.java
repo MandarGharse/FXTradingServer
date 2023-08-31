@@ -4,6 +4,8 @@ public class SubscriptionEndPoints {
 
     // WS Endpoints
     public static final String BOOKING_ENDPOINT = "/booking";
+
+    public static final String BLOTTER_SUBSCRIPTION_ENDPOINT = "/blotter_subscription";
     public static final String FXTRADES_SUBSCRIPTION_ENDPOINT = "/fxtrades_subscription";
     public static final String FXTRADES_VIEWPORT_ENDPOINT = "/fxtrades_viewport";
 

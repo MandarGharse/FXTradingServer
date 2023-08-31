@@ -6,7 +6,7 @@ package com.fx.proto.services;
 
 service TradeServices {
 
-  rpc SubscribeTrades(stream com.fx.proto.messaging.TradesSubscriptionRequestMessage)
-      returns (stream com.fx.proto.messaging.TradesSubscriptionResponseMessage);
+  rpc SubscribePortfolio(stream com.fx.proto.messaging.PortfolioSubscriptionRequestMessage)
+      returns (stream com.fx.proto.messaging.PortfolioSubscriptionResponseMessage);
 
 }

@@ -2,22 +2,20 @@ package com.fx.controller;
 
 import com.fx.common.ApplicationConfiguration;
 import com.fx.domain.json.*;
-import com.fx.client.handlers.FXTradesRequestHandler;
+import com.fx.client.handlers.PortfolioSubscriptionRequestHandler;
 import com.fx.client.service.StompEnhancedMessageSender;
 import com.fx.client.session.UserSession;
 import com.fx.client.session.UserSessionManager;
 import com.fx.common.utils.ObjectMapperUtil;
 import com.fx.client.websocket.StompPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
-import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.BOOKING_ENDPOINT;
-import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT;
+import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.*;
 
 @Controller
 public class StompController {
@@ -29,7 +27,7 @@ public class StompController {
     StompEnhancedMessageSender stompEnhancedMessageSender;
 
     @Autowired
-    FXTradesRequestHandler fxTradesRequestHandler;
+    PortfolioSubscriptionRequestHandler portfolioSubscriptionRequestHandler;
 
     @MessageMapping(BOOKING_ENDPOINT)
     public void handleBookingRequest(@Payload FxTrade trade, StompPrincipal stompPrincipal, @Headers Map headers)   {
@@ -48,59 +46,59 @@ public class StompController {
         }
     }
 
-    @MessageMapping(FXTRADES_SUBSCRIPTION_ENDPOINT)
-    public void handleFXTradesSubscriptionRequest(@Payload FXTradesSubscriptionRequest fxTradesSubscriptionRequest, StompPrincipal stompPrincipal, @Headers Map headers)   {
+    @MessageMapping(BLOTTER_SUBSCRIPTION_ENDPOINT)
+    public void handleBlotterSubscriptionRequest(@Payload BlotterSubscriptionRequestMessage blotterSubscriptionRequestMessage,
+                                                 StompPrincipal stompPrincipal, @Headers Map headers)   {
 
         try {
-            System.out.println("fxTradesSubscriptionRequestt recvd : " + fxTradesSubscriptionRequest);
+            System.out.println("blotterSubscriptionRequestMessage recvd : " + blotterSubscriptionRequestMessage);
             System.out.println("stompPrincipal >>> " + stompPrincipal);
             System.out.println("headers >>> " + headers);
 
             UserSession userSession = UserSessionManager.getUserSession(stompPrincipal.getName());
             System.out.println("retrieved userSession : " + userSession);
             if (userSession == null)    {
-                FXTradesSubscriptionResponse fxTradesSubscriptionResponse = new FXTradesSubscriptionResponse();
-                fxTradesSubscriptionResponse.setSessionId(fxTradesSubscriptionRequest.getSessionId());
-                fxTradesSubscriptionResponse.setType(fxTradesSubscriptionRequest.getType());
-                fxTradesSubscriptionResponse.setStatus("NACK");
-                fxTradesSubscriptionResponse.setRejectText("Invalid sessionId " + fxTradesSubscriptionRequest.getSessionId() + ". not found");
+                BlotterSubscriptionResponseMessage blotterSubscriptionResponseMessage = new BlotterSubscriptionResponseMessage();
+                blotterSubscriptionResponseMessage.setSessionId(blotterSubscriptionRequestMessage.getSessionId());
+                blotterSubscriptionResponseMessage.setType(blotterSubscriptionRequestMessage.getType());
+                blotterSubscriptionResponseMessage.setStatus("NACK");
+                blotterSubscriptionResponseMessage.setRejectText("Invalid sessionId " + blotterSubscriptionRequestMessage.getSessionId() + ". not found");
                 stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-                        ObjectMapperUtil.objectMapper.writeValueAsString(fxTradesSubscriptionResponse), FXTRADES_SUBSCRIPTION_ENDPOINT);
+                        ObjectMapperUtil.objectMapper.writeValueAsString(blotterSubscriptionResponseMessage), BLOTTER_SUBSCRIPTION_ENDPOINT);
                 return;
             }
-            userSession.setFXTradesRequest(fxTradesSubscriptionRequest);
+            userSession.setBlotterSubscriptionRequest(blotterSubscriptionRequestMessage);
 
-            fxTradesRequestHandler.onFXTradesSubscriptionRequest(fxTradesSubscriptionRequest, stompPrincipal);
+            portfolioSubscriptionRequestHandler.onBlotterSubscriptionRequest(blotterSubscriptionRequestMessage, stompPrincipal);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-//    @MessageMapping(FXTRADES_VIEWPORT_ENDPOINT)
-//    public void handleFXTradesSubscriptionRequest(@Payload FXTradesSubscriptionRequest fxTradesSubscriptionRequest, StompPrincipal stompPrincipal, @Headers Map headers)   {
+//    @MessageMapping(FXTRADES_SUBSCRIPTION_ENDPOINT)
+//    public void handleFXTradesSubscriptionRequest(@Payload TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage, StompPrincipal stompPrincipal, @Headers Map headers)   {
 //
 //        try {
-//            System.out.println("fxTradesSubscriptionRequestt recvd : " + fxTradesSubscriptionRequest);
+//            System.out.println("tradesSubscriptionRequestMessage recvd : " + tradesSubscriptionRequestMessage);
 //            System.out.println("stompPrincipal >>> " + stompPrincipal);
 //            System.out.println("headers >>> " + headers);
 //
 //            UserSession userSession = UserSessionManager.getUserSession(stompPrincipal.getName());
 //            System.out.println("retrieved userSession : " + userSession);
 //            if (userSession == null)    {
-//                FXTradesResponse fxTradesResponse = new FXTradesResponse();
-//                fxTradesResponse.setSessionId(fxTradesSubscriptionRequest.getSessionId());
-//                fxTradesResponse.setStartIndex(fxTradesRequest.getStartIndex());
-//                fxTradesResponse.setEndIndex(fxTradesRequest.getEndIndex());
-//                fxTradesResponse.setStatus("NACK");
-//                fxTradesResponse.setRejectText("Invalid sessionId " + fxTradesRequest.getSessionId() + ". not found");
+//                TradesSubscriptionResponseMessage tradesSubscriptionResponseMessage = new TradesSubscriptionResponseMessage();
+//                tradesSubscriptionResponseMessage.setSessionId(tradesSubscriptionRequestMessage.getSessionId());
+//                tradesSubscriptionResponseMessage.setType(tradesSubscriptionRequestMessage.getType());
+//                tradesSubscriptionResponseMessage.setStatus("NACK");
+//                tradesSubscriptionResponseMessage.setRejectText("Invalid sessionId " + tradesSubscriptionRequestMessage.getSessionId() + ". not found");
 //                stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-//                        ObjectMapperUtil.objectMapper.writeValueAsString(fxTradesResponse), SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT);
+//                        ObjectMapperUtil.objectMapper.writeValueAsString(tradesSubscriptionResponseMessage), FXTRADES_SUBSCRIPTION_ENDPOINT);
 //                return;
 //            }
-//            userSession.setFXTradesRequest(fxTradesRequest);
+//            userSession.setFXTradesRequest(tradesSubscriptionRequestMessage);
 //
-//            fxTradesRequestHandler.onData(fxTradesRequest, stompPrincipal);
+//            portfolioSubscriptionRequestHandler.onFXTradesSubscriptionRequest(tradesSubscriptionRequestMessage, stompPrincipal);
 //
 //        } catch (Exception e) {
 //            throw new RuntimeException(e);

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "sessionId",
     "type"
 })
-public class FXTradesSubscriptionRequest {
+public class BlotterSubscriptionRequestMessage {
 
     @JsonProperty("sessionId")
     private String sessionId;
@@ -21,7 +21,7 @@ public class FXTradesSubscriptionRequest {
      * No args constructor for use in serialization
      * 
      */
-    public FXTradesSubscriptionRequest() {
+    public BlotterSubscriptionRequestMessage() {
     }
 
     /**
@@ -29,7 +29,7 @@ public class FXTradesSubscriptionRequest {
      * @param sessionId
      * @param type
      */
-    public FXTradesSubscriptionRequest(String sessionId, String type) {
+    public BlotterSubscriptionRequestMessage(String sessionId, String type) {
         super();
         this.sessionId = sessionId;
         this.type = type;
@@ -58,7 +58,7 @@ public class FXTradesSubscriptionRequest {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(FXTradesSubscriptionRequest.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append(BlotterSubscriptionRequestMessage.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("sessionId");
         sb.append('=');
         sb.append(((this.sessionId == null)?"<null>":this.sessionId));
@@ -88,10 +88,10 @@ public class FXTradesSubscriptionRequest {
         if (other == this) {
             return true;
         }
-        if ((other instanceof FXTradesSubscriptionRequest) == false) {
+        if ((other instanceof BlotterSubscriptionRequestMessage) == false) {
             return false;
         }
-        FXTradesSubscriptionRequest rhs = ((FXTradesSubscriptionRequest) other);
+        BlotterSubscriptionRequestMessage rhs = ((BlotterSubscriptionRequestMessage) other);
         return (((this.type == rhs.type)||((this.type!= null)&&this.type.equals(rhs.type)))&&((this.sessionId == rhs.sessionId)||((this.sessionId!= null)&&this.sessionId.equals(rhs.sessionId))));
     }
 

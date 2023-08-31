@@ -1,5 +1,6 @@
 package com.fx.client.grpc;
 
+import com.fx.common.enums.GrpcClientId;
 import com.fx.proto.services.TradeServicesGrpc;
 import com.fx.common.utils.ExecutorWorkerAppPool;
 import io.grpc.ClientInterceptor;
