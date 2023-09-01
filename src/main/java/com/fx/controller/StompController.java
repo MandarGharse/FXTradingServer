@@ -76,34 +76,37 @@ public class StompController {
         }
     }
 
-//    @MessageMapping(FXTRADES_SUBSCRIPTION_ENDPOINT)
-//    public void handleFXTradesSubscriptionRequest(@Payload TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage, StompPrincipal stompPrincipal, @Headers Map headers)   {
-//
-//        try {
-//            System.out.println("tradesSubscriptionRequestMessage recvd : " + tradesSubscriptionRequestMessage);
-//            System.out.println("stompPrincipal >>> " + stompPrincipal);
-//            System.out.println("headers >>> " + headers);
-//
-//            UserSession userSession = UserSessionManager.getUserSession(stompPrincipal.getName());
-//            System.out.println("retrieved userSession : " + userSession);
-//            if (userSession == null)    {
-//                TradesSubscriptionResponseMessage tradesSubscriptionResponseMessage = new TradesSubscriptionResponseMessage();
-//                tradesSubscriptionResponseMessage.setSessionId(tradesSubscriptionRequestMessage.getSessionId());
-//                tradesSubscriptionResponseMessage.setType(tradesSubscriptionRequestMessage.getType());
-//                tradesSubscriptionResponseMessage.setStatus("NACK");
-//                tradesSubscriptionResponseMessage.setRejectText("Invalid sessionId " + tradesSubscriptionRequestMessage.getSessionId() + ". not found");
-//                stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-//                        ObjectMapperUtil.objectMapper.writeValueAsString(tradesSubscriptionResponseMessage), FXTRADES_SUBSCRIPTION_ENDPOINT);
-//                return;
-//            }
-//            userSession.setFXTradesRequest(tradesSubscriptionRequestMessage);
-//
-//            portfolioSubscriptionRequestHandler.onFXTradesSubscriptionRequest(tradesSubscriptionRequestMessage, stompPrincipal);
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    @MessageMapping(BLOTTER_FILL_ENDPOINT)
+    public void handleBlotterFillRequest(@Payload BlotterFillRequestMessage blotterFillRequestMessage,
+                                                 StompPrincipal stompPrincipal, @Headers Map headers)   {
+
+        try {
+            System.out.println("blotterFillRequestMessage recvd : " + blotterFillRequestMessage);
+            System.out.println("stompPrincipal >>> " + stompPrincipal);
+            System.out.println("headers >>> " + headers);
+
+            UserSession userSession = UserSessionManager.getUserSession(stompPrincipal.getName());
+            System.out.println("retrieved userSession : " + userSession);
+            if (userSession == null)    {
+                BlotterFillResponseMessage blotterFillResponseMessage = new BlotterFillResponseMessage();
+                blotterFillResponseMessage.setSessionId(blotterFillRequestMessage.getSessionId());
+                blotterFillResponseMessage.setStartIndex(blotterFillRequestMessage.getStartIndex());
+                blotterFillResponseMessage.setEndIndex(blotterFillRequestMessage.getEndIndex());
+                blotterFillResponseMessage.setStatus("NACK");
+                blotterFillResponseMessage.setRejectText("Invalid sessionId " + blotterFillResponseMessage.getSessionId() + ". not found");
+                stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
+                        ObjectMapperUtil.objectMapper.writeValueAsString(blotterFillResponseMessage), BLOTTER_SUBSCRIPTION_ENDPOINT);
+                return;
+            }
+            userSession.setBlotterFillRequest(blotterFillRequestMessage);
+
+            portfolioSubscriptionRequestHandler.onBlotterFillRequest(blotterFillRequestMessage, stompPrincipal);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @MessageExceptionHandler
     @SendToUser("/queue/errors")

@@ -4,6 +4,7 @@ import com.fx.client.grpc.GrpcClientManager;
 import com.fx.client.service.StompEnhancedMessageSender;
 import com.fx.client.websocket.StompPrincipal;
 import com.fx.client.websocket.endpoints.SubscriptionEndPoints;
+import com.fx.domain.json.BlotterFillRequestMessage;
 import com.fx.domain.json.BlotterSubscriptionRequestMessage;
 import com.fx.common.enums.GrpcClientId;
 import com.fx.proto.messaging.TradeMessages;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 public class PortfolioSubscriptionRequestHandler {
     @Autowired
     StompEnhancedMessageSender stompEnhancedMessageSender;
+    @Autowired
+    GrpcClientManager grpcClientManagerPortfolio;
 
     private JsonFormat.Printer jsonPrinter = JsonFormat.printer()
             .includingDefaultValueFields()
@@ -34,10 +37,8 @@ public class PortfolioSubscriptionRequestHandler {
                 new StreamObserver<>() {
                     @Override
                     public void onNext(TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage) {
-                        System.out.println("onNext:portfolioSubscriptionResponseMessage " + portfolioSubscriptionResponseMessage);
                         try {
                             String portfolioSubscriptionResponseJson = jsonPrinter.print(portfolioSubscriptionResponseMessage);
-                            System.out.println("converted portfolioSubscriptionResponseMessage to json : " + portfolioSubscriptionResponseMessage);
                             stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
                                     portfolioSubscriptionResponseJson,
                                     SubscriptionEndPoints.BLOTTER_SUBSCRIPTION_ENDPOINT);
@@ -76,45 +77,57 @@ public class PortfolioSubscriptionRequestHandler {
         System.out.println("invoked grpc server for blotterSubscriptionRequestMessage " + blotterSubscriptionRequestMessage);
     }
 
-//    public void onFXTradesSubscriptionRequest(TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage, StompPrincipal stompPrincipal) throws JsonProcessingException {
-//        System.out.println("processing tradesSubscriptionRequestMessage " + tradesSubscriptionRequestMessage);
-//
-//        // GRPC subscription
-//        GrpcClientManager.GrpcClient grpcClient = GrpcClientManager.getGrpcClient(GrpcClientId.TRADES);
-//        System.out.println("retrieved grpc client handle for tradesSubscriptionRequestMessage " + tradesSubscriptionRequestMessage);
-//        StreamObserver<TradeMessages.TradesSubscriptionResponseMessage> subscriptionRequestMessageStreamObserver =
-//                new StreamObserver<>() {
-//                    @Override
-//                    public void onNext(TradeMessages.TradesSubscriptionResponseMessage tradesSubscriptionResponseMessage) {
-//                        System.out.println("onNext:TradesSubscriptionResponseMessage " + tradesSubscriptionResponseMessage);
-//                        try {
-//                            String jsonMessageString = jsonPrinter.print(tradesSubscriptionResponseMessage);
-//                            System.out.println("jsonMessageString : " + jsonMessageString);
-//                            stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
-//                                    jsonMessageString,
-//                                    SubscriptionEndPoints.FXTRADES_SUBSCRIPTION_ENDPOINT);
-//                            System.out.println("message sent to sessionId : " + stompPrincipal.getName());
-//                        } catch (InvalidProtocolBufferException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable throwable) {
-//                        System.out.println("onError:TradesSubscriptionResponseMessage " + throwable.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void onCompleted() {
-//                        System.out.println("onCompleted:TradesSubscriptionResponseMessage");
-//                    }
-//                };
-//
-//        System.out.println("invoking grpc server for tradesSubscriptionRequestMessage " + tradesSubscriptionRequestMessage);
-//        invokeGrpc(grpcClient.getAsyncTradeServicesStub(), subscriptionRequestMessageStreamObserver);
-//        System.out.println("invoked grpc server for tradesSubscriptionRequestMessage " + tradesSubscriptionRequestMessage);
-//
-//    }
+    public void onBlotterFillRequest(BlotterFillRequestMessage blotterFillRequestMessage, StompPrincipal stompPrincipal) {
+        System.out.println("processing onBlotterFillRequest " + blotterFillRequestMessage);
+
+        // GRPC subscription
+        GrpcClientManager.GrpcClient grpcClient = GrpcClientManager.getGrpcClient(GrpcClientId.TRADES);
+        System.out.println("retrieved grpc client handle for blotterFillRequestMessage " + blotterFillRequestMessage);
+
+        StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> portfolioSubscriptionResponseStreamObserver =
+                new StreamObserver<>() {
+                    @Override
+                    public void onNext(TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage) {
+                        try {
+                            String portfolioSubscriptionResponseJson = jsonPrinter.print(portfolioSubscriptionResponseMessage);
+                            stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
+                                    portfolioSubscriptionResponseJson,
+                                    SubscriptionEndPoints.BLOTTER_SUBSCRIPTION_ENDPOINT);
+                            System.out.println("message sent to sessionId : " + stompPrincipal.getName());
+                        } catch (InvalidProtocolBufferException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        System.out.println("onError:BlotterFillResponse " + throwable.getMessage());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("onCompleted:BlotterFillResponse");
+                    }
+                };
+
+        System.out.println("invoking grpc server for portfolioSubscriptionResponseStreamObserver " + portfolioSubscriptionResponseStreamObserver);
+
+        StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage> portfolioSubscriptionRequestMessageStreamObserver =
+                invokeGrpc(grpcClient.getAsyncTradeServicesStub(), portfolioSubscriptionResponseStreamObserver);
+
+        TradeMessages.BlotterFillRequest blotterFillRequestProto = TradeMessages.BlotterFillRequest.newBuilder()
+                .setSessionKey(blotterFillRequestMessage.getSessionId())
+                .setStartIndex(blotterFillRequestMessage.getStartIndex())
+                .setEndIndex(blotterFillRequestMessage.getEndIndex())
+                .build();
+        TradeMessages.PortfolioSubscriptionRequestMessage portfolioSubscriptionRequestMessage =
+                TradeMessages.PortfolioSubscriptionRequestMessage.newBuilder().setBlotterFillRequest(blotterFillRequestProto)
+                        .build();
+
+        portfolioSubscriptionRequestMessageStreamObserver.onNext(portfolioSubscriptionRequestMessage);
+        System.out.println("invoked grpc server for blotterFillRequestMessage " + blotterFillRequestMessage);
+
+    }
 
     protected StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage> invokeGrpc(TradeServicesGrpc.TradeServicesStub tradeServicesStub,
                                                                                         StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> subscriptionRequestMessageStreamObserver)  {

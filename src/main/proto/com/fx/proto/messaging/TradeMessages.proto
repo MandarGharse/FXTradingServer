@@ -64,15 +64,15 @@ message BlotterSubscriptionResponse  {
 
 message BlotterFillRequest  {
     string session_key = 1;
-    uint32 start_index = 2;
-    uint32 end_index = 3;
+    int64 start_index = 2;
+    int64 end_index = 3;
 }
 
 message BlotterFillResponse  {
     ResponseStatus response_status = 1;
     string session_key = 2;
-    uint32 start_index = 3;
-    uint32 end_index = 4;
+    int64 start_index = 3;
+    int64 end_index = 4;
     repeated TradeKeyVersion trades_data = 5;
 }
 
