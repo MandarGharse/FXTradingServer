@@ -9,13 +9,16 @@ import io.grpc.stub.StreamObserver;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SessionTradesProviderService implements StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage>, Disposable {
 
     StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> outStream;
-    TradeMessages.PortfolioSubscriptionRequestMessage portfolioSubscriptionRequestMessage;
+    TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest;
+    TradeMessages.BlotterFillRequest blotterFillRequest;
+    TradeMessages.TradeResolutionRequest tradeResolutionRequest;
 
-    List<TradeMessages.Trade> tradesList = new ArrayList<>();
+    List<TradeMessages.Trade> tradesList = new ArrayList<>();   // list of trades sorted/filtered by user criteria
 
     private boolean isDisposed = false;
 
@@ -24,6 +27,8 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
     public SessionTradesProviderService(StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> responseObserver) {
         super();
         this.outStream = responseObserver;
+
+        processEvent();
     }
 
     @Override
@@ -33,7 +38,6 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
             outStream.onError(new Throwable("stream disposed!"));
             return;
         }
-        this.portfolioSubscriptionRequestMessage = portfolioSubscriptionRequestMessage;
 
         try {
             if (portfolioSubscriptionRequestMessage.hasBlotterSubscriptionRequest())    {
@@ -55,50 +59,64 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
     private void onNext(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest) {
         System.out.println("processing blotterSubscriptionRequest " + blotterSubscriptionRequest);
+        this.blotterSubscriptionRequest = blotterSubscriptionRequest;
 
         // TODO : only pull based on Criteria/filter
         List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
         tradesList.clear();
         tradesList.addAll(tradesListtemp);
 
-        sendSnapshot();
+        sendBlotterSubscriptionSnapshot(blotterSubscriptionRequest);
 
+    }
+
+    private void processEvent() {
         TradesListener.getInstance().getTradeSubject().subscribe(tradeObj -> {
                     TradeMessages.Trade trade = (TradeMessages.Trade) tradeObj;
-                    System.out.println("adding to cache...");
                     tradesList.add(trade);
-                    System.out.println("added to cache");
+                    System.out.println("added to cache. size " + tradesList.size());      // TODO sort/filter the cache
 
                     TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                             TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-                                    .setBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionResponse.newBuilder()
-                                            .setSummaryResponse(TradeMessages.SummaryResponse.newBuilder()
-                                                    .addSummary(buildKPIList(tradesList))
-                                                    .build())
-                                            .setSuccess(true)).build();
+                                    .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest))
+                                    .build();
                     outStream.onNext(portfolioSubscriptionResponseMessage);
-                    System.out.println("published portfolioSubscriptionResponseMessage for responseObserver " + outStream.hashCode() +
-                            ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
+                    System.out.println("published portfolioSubscriptionResponseMessage->BlotterSubscriptionResponse for responseObserver " + outStream.hashCode());
+                    //System.out.println("published portfolioSubscriptionResponseMessage->BlotterSubscriptionResponse for responseObserver " + outStream.hashCode() +
+                    //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
+
+                    portfolioSubscriptionResponseMessage =
+                            TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
+                                    .setBlotterFillResponse(buildBlotterFillResponse(blotterFillRequest))
+                                    .build();
+                    outStream.onNext(portfolioSubscriptionResponseMessage);
+                    System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode());
+                    //System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode() +
+                    //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
                 },
                 onError -> {
                     System.out.println("error " + onError);
                 }
         );
-
     }
 
-    private void sendSnapshot() {
+    private void sendBlotterSubscriptionSnapshot(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest) {
         TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                 TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-                        .setBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionResponse.newBuilder()
-                                .setSummaryResponse(TradeMessages.SummaryResponse.newBuilder()
-                                        .addSummary(buildKPIList(tradesList))
-                                        .build())
-                                .setSuccess(true)).build();
+                        .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest)).build();
         outStream.onNext(portfolioSubscriptionResponseMessage);
-        System.out.println("snapshot sent to responseObserver " + outStream.hashCode());
+        System.out.println("blotter subscription snapshot sent to responseObserver " + outStream.hashCode() + " message -> " + portfolioSubscriptionResponseMessage);
     }
 
+    private TradeMessages.BlotterSubscriptionResponse buildBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest)    {
+        return TradeMessages.BlotterSubscriptionResponse.newBuilder()
+                .setSessionKey(blotterSubscriptionRequest.getSessionKey())
+                .setSummaryResponse(TradeMessages.SummaryResponse.newBuilder()
+                        .addSummary(buildKPIList(tradesList))
+                        .build())
+                .setSuccess(true)
+                .build();
+    }
     private TradeMessages.SummaryList buildKPIList(List<TradeMessages.Trade> tradesList) {
         TradeMessages.SummaryList.Builder summaryListBuilder = TradeMessages.SummaryList.newBuilder();
 
@@ -138,15 +156,49 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
     private void onNext(TradeMessages.BlotterFillRequest blotterFillRequest) {
         System.out.println("processing blotterFillRequest " + blotterFillRequest);
+        this.blotterFillRequest = blotterFillRequest;
+
+        sendBlotterFillSnapshot(blotterFillRequest);
+    }
+
+    private void sendBlotterFillSnapshot(TradeMessages.BlotterFillRequest blotterFillRequest) {
+        TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
+                TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
+                        .setBlotterFillResponse(buildBlotterFillResponse(blotterFillRequest))
+                        .build();
+        outStream.onNext(portfolioSubscriptionResponseMessage);
+        System.out.println("blotter fill snapshot sent to responseObserver " + outStream.hashCode());
+    }
+
+    private TradeMessages.BlotterFillResponse buildBlotterFillResponse(TradeMessages.BlotterFillRequest blotterFillRequest)    {
+        return TradeMessages.BlotterFillResponse.newBuilder()
+                .setSessionKey(blotterFillRequest.getSessionKey())
+                .setStartIndex(blotterFillRequest.getStartIndex())
+                .setEndIndex(blotterFillRequest.getEndIndex())
+                .addAllTradesData(getTradesSublist(blotterFillRequest.getStartIndex(), blotterFillRequest.getEndIndex()))
+                .build();
+    }
+
+    private Iterable<? extends TradeMessages.TradeKeyVersion> getTradesSublist(long startIndex, long endIndex) {
+        System.out.println("getTradesSublist called with " + startIndex + ", " + endIndex +". tradesList.size() : " + tradesList.size());
+        if (startIndex > tradesList.size() || tradesList.size() == 0)
+            return new ArrayList<>();
+        if (endIndex > tradesList.size())
+            endIndex = tradesList.size();
+        List<TradeMessages.TradeKeyVersion> collect = tradesList.stream().map(trade -> trade.getTradeKeyVersion()).collect(Collectors.toList());
+        System.out.println("sublist returning data between startIndex:" + startIndex + ", endIndex:" + endIndex);
+        return collect.subList(Long.valueOf(startIndex).intValue(), Long.valueOf(endIndex-1).intValue());
     }
 
     private void onNext(TradeMessages.TradeResolutionRequest tradeResolutionRequest) {
         System.out.println("processing tradeResolutionRequest " + tradeResolutionRequest);
+        this.tradeResolutionRequest = tradeResolutionRequest;
     }
 
     @Override
     public void onError(Throwable throwable) {
-        System.out.println("onError!");
+        System.out.println("onError! " + throwable);
+        System.out.println(throwable.getMessage());
         dispose();
     }
 

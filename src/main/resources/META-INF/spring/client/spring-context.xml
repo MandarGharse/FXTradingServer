@@ -10,6 +10,9 @@
         <constructor-arg value="${grpc.hostname}" />
         <constructor-arg value="${grpc.port}" />
     </bean>
+    
+    <bean id="portfolioSubscriptionRequestHandler" class="com.fx.client.handlers.PortfolioSubscriptionRequestHandler">
+    </bean>
 
     <bean id="applicationConfiguration" class="com.fx.common.ApplicationConfiguration">
     </bean>

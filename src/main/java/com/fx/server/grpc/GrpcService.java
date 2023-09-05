@@ -11,11 +11,8 @@ public class GrpcService extends TradeServicesGrpc.TradeServicesImplBase {
     @Override
     public StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage> subscribePortfolio
             (StreamObserver<TradeMessages.PortfolioSubscriptionResponseMessage> responseObserver) {
-
-        System.out.println("subscribe trades called. responseObserver " + responseObserver.hashCode());
-
+        System.out.println("subscribePortfolio called. responseObserver " + responseObserver.hashCode());
         return new SessionTradesProviderService(responseObserver);
-
     }
 
 }

@@ -41,7 +41,7 @@ public class TradesListener {
             }
         };
         Timer timer = new Timer("TradeEvent");
-        timer.scheduleAtFixedRate(timerTask, 0, 5*1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 30*1000);
     }
 
     // process live trade event

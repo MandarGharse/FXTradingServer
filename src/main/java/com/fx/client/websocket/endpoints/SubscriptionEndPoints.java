@@ -9,10 +9,8 @@ public class SubscriptionEndPoints {
 
     public static final String BLOTTER_FILL_ENDPOINT = "/blotter_fill";
 
-    public static final String FXTRADES_SUBSCRIPTION_ENDPOINT = "/fxtrades_subscription";
-    public static final String FXTRADES_VIEWPORT_ENDPOINT = "/fxtrades_viewport";
-
     // REST Endpoints
     public static final String CURRENCYPAIR_ENDPOINT = "/dataservice/gatewaywebsocket/ccypairs";
 
+    public static final String TRADE_RESOLUTION_ENDPOINT = "/trade_resolution";
 }
