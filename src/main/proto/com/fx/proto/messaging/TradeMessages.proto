@@ -78,7 +78,7 @@ message BlotterFillResponse  {
 
 message TradeResolutionRequest  {
     string session_key = 1;
-    repeated string trade_keys = 2;
+    repeated TradeKeyVersion trade_keys = 2;
 }
 
 message TradeResolutionResponse  {

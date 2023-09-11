@@ -8,11 +8,13 @@ import com.fx.client.session.UserSession;
 import com.fx.client.session.UserSessionManager;
 import com.fx.common.utils.ObjectMapperUtil;
 import com.fx.client.websocket.StompPrincipal;
+import com.fx.proto.messaging.TradeMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.fx.client.websocket.endpoints.SubscriptionEndPoints.*;
@@ -106,7 +108,35 @@ public class StompController {
             throw new RuntimeException(e);
         }
     }
+    @MessageMapping(TRADE_RESOLUTION_ENDPOINT)
+    public void handleTradeResolutionRequest(@Payload TradeResolutionRequestMessage tradeResolutionRequestMessage,
+                                         StompPrincipal stompPrincipal, @Headers Map headers)   {
 
+        try {
+            System.out.println("tradeResolutionRequest recvd : " + tradeResolutionRequestMessage);
+            System.out.println("stompPrincipal >>> " + stompPrincipal);
+            System.out.println("headers >>> " + headers);
+
+            UserSession userSession = UserSessionManager.getUserSession(stompPrincipal.getName());
+            System.out.println("retrieved userSession : " + userSession);
+            if (userSession == null)    {
+                TradeResolutionResponseMessage tradeResolutionResponseMessage = new TradeResolutionResponseMessage();
+                tradeResolutionResponseMessage.setSessionId(tradeResolutionRequestMessage.getSessionId());
+                tradeResolutionResponseMessage.setTrades(new ArrayList<>());
+                tradeResolutionResponseMessage.setStatus("NACK");
+                tradeResolutionResponseMessage.setRejectText("Invalid sessionId " + tradeResolutionResponseMessage.getSessionId() + ". not found");
+                stompEnhancedMessageSender.sendMessage(stompPrincipal.getName(),
+                        ObjectMapperUtil.objectMapper.writeValueAsString(tradeResolutionResponseMessage), TRADE_RESOLUTION_ENDPOINT);
+                return;
+            }
+            userSession.setTradeResolutionRequest(tradeResolutionRequestMessage);
+
+            portfolioSubscriptionRequestHandler.onTradeResolutionRequest(tradeResolutionRequestMessage, stompPrincipal);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @MessageExceptionHandler
     @SendToUser("/queue/errors")

@@ -6,10 +6,8 @@
   "type": "object",
   "properties": {
     "sessionId": {"type": "string"},
-    "startIndex": {"type": "integer"},
-    "endIndex": {"type": "integer"},
+    "trades": {"$ref": "FXTrade.json/#definitions/fxTrades"},
     "status": {"type": "string"},
-    "rejectText": {"type": "string"},
-    "trades": {"$ref": "FXTrade.json#definitions/fxTrades"}
+    "rejectText": {"type": "string"}
   }
 }

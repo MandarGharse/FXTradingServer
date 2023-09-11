@@ -8,6 +8,13 @@
         "$ref": "#definitions/fxTrade"
       }
     },
+    "fxTradeKeys": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#definitions/fxTradeKey"
+      }
+    },
     "fxTrade": {
       "type": "object",
       "properties": {
@@ -18,6 +25,13 @@
         "dealtCcy": {"type": "string"},
         "dealtAmount": {"type": "string"},
         "counterAmount": {"type": "string"}
+      }
+    },
+    "fxTradeKey": {
+      "type": "object",
+      "properties": {
+        "tradeKey": {"type": "string"},
+        "tradeVersion": {"type": "string"}
       }
     }
   }

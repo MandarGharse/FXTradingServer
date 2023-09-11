@@ -67,7 +67,20 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
         tradesList.addAll(tradesListtemp);
 
         sendBlotterSubscriptionSnapshot(blotterSubscriptionRequest);
+    }
 
+    private void onNext(TradeMessages.BlotterFillRequest blotterFillRequest) {
+        System.out.println("processing blotterFillRequest " + blotterFillRequest);
+        this.blotterFillRequest = blotterFillRequest;
+
+        sendBlotterFillSnapshot(blotterFillRequest);
+    }
+
+    private void onNext(TradeMessages.TradeResolutionRequest tradeResolutionRequest) {
+        System.out.println("processing tradeResolutionRequest " + tradeResolutionRequest);
+        this.tradeResolutionRequest = tradeResolutionRequest;
+
+        sendTradeResolutionResponse(tradeResolutionRequest);
     }
 
     private void processEvent() {
@@ -100,12 +113,34 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
         );
     }
 
+    private void sendTradeResolutionResponse(TradeMessages.TradeResolutionRequest tradeResolutionRequest) {
+        TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
+                TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
+                        .setTradeResolutionResponse(buildTradeResolutionResponse(tradeResolutionRequest)).build();
+        outStream.onNext(portfolioSubscriptionResponseMessage);
+        System.out.println("trade resolution snapshot sent to responseObserver " + outStream.hashCode());
+    }
+
+    private TradeMessages.TradeResolutionResponse buildTradeResolutionResponse(TradeMessages.TradeResolutionRequest tradeResolutionRequest) {
+        List<TradeMessages.Trade> resolvedTradesList = new ArrayList<>();
+        tradeResolutionRequest.getTradeKeysList().forEach(tradeKey -> {
+            TradeMessages.Trade trade = TradesCache.getInstance().getItem(tradeKey);
+            resolvedTradesList.add(trade);
+        });
+        TradeMessages.TradeResolutionResponse tradeResolutionResponse = TradeMessages.TradeResolutionResponse.newBuilder()
+                .setSessionKey(tradeResolutionRequest.getSessionKey())
+                .addAllTrades(resolvedTradesList)
+                .build();
+
+        return tradeResolutionResponse;
+    }
+
     private void sendBlotterSubscriptionSnapshot(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest) {
         TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                 TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
                         .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest)).build();
         outStream.onNext(portfolioSubscriptionResponseMessage);
-        System.out.println("blotter subscription snapshot sent to responseObserver " + outStream.hashCode() + " message -> " + portfolioSubscriptionResponseMessage);
+        System.out.println("blotter subscription snapshot sent to responseObserver " + outStream.hashCode());
     }
 
     private TradeMessages.BlotterSubscriptionResponse buildBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest)    {
@@ -154,13 +189,6 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
     }
 
-    private void onNext(TradeMessages.BlotterFillRequest blotterFillRequest) {
-        System.out.println("processing blotterFillRequest " + blotterFillRequest);
-        this.blotterFillRequest = blotterFillRequest;
-
-        sendBlotterFillSnapshot(blotterFillRequest);
-    }
-
     private void sendBlotterFillSnapshot(TradeMessages.BlotterFillRequest blotterFillRequest) {
         TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                 TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
@@ -187,12 +215,7 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
             endIndex = tradesList.size();
         List<TradeMessages.TradeKeyVersion> collect = tradesList.stream().map(trade -> trade.getTradeKeyVersion()).collect(Collectors.toList());
         System.out.println("sublist returning data between startIndex:" + startIndex + ", endIndex:" + endIndex);
-        return collect.subList(Long.valueOf(startIndex).intValue(), Long.valueOf(endIndex-1).intValue());
-    }
-
-    private void onNext(TradeMessages.TradeResolutionRequest tradeResolutionRequest) {
-        System.out.println("processing tradeResolutionRequest " + tradeResolutionRequest);
-        this.tradeResolutionRequest = tradeResolutionRequest;
+        return collect.subList(Long.valueOf(startIndex).intValue(), Long.valueOf(endIndex).intValue());
     }
 
     @Override

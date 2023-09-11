@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TradesCache {
-    Map<String, TradeMessages.Trade> tradesCache = new ConcurrentHashMap<>();
+    Map<TradeMessages.TradeKeyVersion, TradeMessages.Trade> tradesCache = new ConcurrentHashMap<>();
     static final TradesCache instance = new TradesCache();
 
     private TradesCache()   {
@@ -18,7 +18,7 @@ public class TradesCache {
         return instance;
     }
 
-    public synchronized Map<String, TradeMessages.Trade> getTradesCache() {
+    public synchronized Map<TradeMessages.TradeKeyVersion, TradeMessages.Trade> getTradesCache() {
         return ImmutableMap.copyOf(tradesCache);
     }
 
@@ -27,12 +27,12 @@ public class TradesCache {
             System.out.println("Failed to write to TradesCache. Invalid key " + trade.getTradeKeyVersion() + " for trade " + trade);
             return;
         }
-        tradesCache.put(trade.getTradeKeyVersion().getTradeKey(), trade);
+        tradesCache.put(trade.getTradeKeyVersion(), trade);
         System.out.println("cache size after adding item " + tradesCache.size());
     }
 
-    public TradeMessages.Trade getItem(String tradeKey)   {
-        return tradesCache.get(tradeKey);
+    public TradeMessages.Trade getItem(TradeMessages.TradeKeyVersion tradeKeyVersion)   {
+        return tradesCache.get(tradeKeyVersion);
     }
 
 }

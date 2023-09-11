@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class StompEnhancedMessageSender {
 
-    private int maxChunkLength = 10000;
+    private int maxChunkLength = 100000;
     private int maxNumberChunks = 5;
 
     @Autowired

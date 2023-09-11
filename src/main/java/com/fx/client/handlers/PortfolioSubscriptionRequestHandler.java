@@ -7,6 +7,7 @@ import com.fx.client.websocket.endpoints.SubscriptionEndPoints;
 import com.fx.domain.json.BlotterFillRequestMessage;
 import com.fx.domain.json.BlotterSubscriptionRequestMessage;
 import com.fx.common.enums.GrpcClientId;
+import com.fx.domain.json.TradeResolutionRequestMessage;
 import com.fx.proto.messaging.TradeMessages;
 import com.fx.proto.services.TradeServicesGrpc;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -16,6 +17,8 @@ import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -77,6 +80,32 @@ public class PortfolioSubscriptionRequestHandler {
 
         portfolioSubscriptionRequestMessageStreamObserver.onNext(portfolioSubscriptionRequestMessage);
         System.out.println("invoked grpc server for blotterFillRequestMessage " + blotterFillRequestMessage);
+
+    }
+
+    public synchronized void onTradeResolutionRequest(TradeResolutionRequestMessage tradeResolutionRequestMessage, StompPrincipal stompPrincipal) {
+        System.out.println("processing onTradeResolutionRequest " + tradeResolutionRequestMessage);
+
+        StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage> portfolioSubscriptionRequestMessageStreamObserver =
+                getOrCreatePortfolioSubscriptionRequestMessageStreamObserver(stompPrincipal);
+
+        List<TradeMessages.TradeKeyVersion> tradeKeyVersionList = new ArrayList<>();
+        tradeResolutionRequestMessage.getTradeKeys().forEach(fxTradeKeyVersion -> {
+          tradeKeyVersionList.add(TradeMessages.TradeKeyVersion.newBuilder()
+                  .setTradeKey(fxTradeKeyVersion.getTradeKey())
+                  .setTradeVersion(Integer.parseInt(fxTradeKeyVersion.getTradeVersion()))
+                  .build());
+        });
+        TradeMessages.TradeResolutionRequest tradeResolutionRequestProto = TradeMessages.TradeResolutionRequest.newBuilder()
+                .setSessionKey(tradeResolutionRequestMessage.getSessionId())
+                .addAllTradeKeys(tradeKeyVersionList)
+                .build();
+        TradeMessages.PortfolioSubscriptionRequestMessage portfolioSubscriptionRequestMessage =
+                TradeMessages.PortfolioSubscriptionRequestMessage.newBuilder().setTradeResolutionRequest(tradeResolutionRequestProto)
+                        .build();
+
+        portfolioSubscriptionRequestMessageStreamObserver.onNext(portfolioSubscriptionRequestMessage);
+        System.out.println("invoked grpc server for tradeResolutionRequestMessage " + tradeResolutionRequestMessage);
 
     }
 
