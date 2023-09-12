@@ -19,6 +19,7 @@ public class TradesListener {
     static Subject<Object> tradeSubject = PublishSubject.create().toSerialized();
 
     static TradesListener instance = null;
+    boolean spoofTradesEnabled = true;
 
     private TradesListener()    {}
 
@@ -33,15 +34,17 @@ public class TradesListener {
     public void init()    {
         System.out.println("instance #" + this.hashCode());
 
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                TradeMessages.Trade trade = TradeSpoofer.spoofTrade();
-                onMessage(trade);
-            }
-        };
-        Timer timer = new Timer("TradeEvent");
-        timer.scheduleAtFixedRate(timerTask, 0, 30*1000);
+        if (spoofTradesEnabled) {
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    TradeMessages.Trade trade = TradeSpoofer.spoofTrade();
+                    onMessage(trade);
+                }
+            };
+            Timer timer = new Timer("TradeEvent");
+            timer.scheduleAtFixedRate(timerTask, 0, 30 * 1000);
+        }
     }
 
     // process live trade event

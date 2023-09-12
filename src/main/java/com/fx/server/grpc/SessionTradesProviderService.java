@@ -146,6 +146,8 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
     private TradeMessages.BlotterSubscriptionResponse buildBlotterSubscriptionResponse(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest)    {
         return TradeMessages.BlotterSubscriptionResponse.newBuilder()
                 .setSessionKey(blotterSubscriptionRequest.getSessionKey())
+                .setTotalTradeCount(tradesList.size())
+                .setTotalTradeVolume(tradesList.stream().mapToDouble(value -> value.getUsdAmount()).sum())
                 .setSummaryResponse(TradeMessages.SummaryResponse.newBuilder()
                         .addSummary(buildKPIList(tradesList))
                         .build())

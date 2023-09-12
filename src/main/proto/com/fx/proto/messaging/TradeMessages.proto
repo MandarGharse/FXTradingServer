@@ -58,8 +58,10 @@ message BlotterSubscriptionResponse  {
     SortQuery sort_query = 2;
     FilterQuery filter_query = 3;
     SummaryResponse summary_response = 4;
-    bool success = 5;
-    string error_message = 6;
+    int64 total_trade_count = 5;
+    double total_trade_volume = 6;
+    bool success = 7;
+    string error_message = 8;
 }
 
 message BlotterFillRequest  {
@@ -102,8 +104,6 @@ message SummaryResponse {
 
 message SummaryList {
     repeated Statistics statistics = 2;
-    int64 total_trade_count = 3;
-    double total_trade_volume = 4;
 }
 
 message Statistics  {
