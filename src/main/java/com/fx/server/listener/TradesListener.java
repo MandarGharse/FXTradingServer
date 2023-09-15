@@ -43,7 +43,7 @@ public class TradesListener {
                 }
             };
             Timer timer = new Timer("TradeEvent");
-            timer.scheduleAtFixedRate(timerTask, 0, 30 * 1000);
+            timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
         }
     }
 

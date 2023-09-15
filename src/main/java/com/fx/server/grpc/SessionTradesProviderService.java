@@ -63,8 +63,8 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
         // TODO : only pull based on Criteria/filter
         List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
-        if (blotterSubscriptionRequest.getSortQuery() == null)  // apply Default sort : Refactor
-            tradesListtemp.sort((o1, o2) -> o1.getLastUpdateTime() > o2.getLastUpdateTime() ? 1 : 0);
+        if (!blotterSubscriptionRequest.hasSortQuery())  // apply Default sort : Refactor
+            tradesListtemp.sort((o1, o2) -> Long.compare(o2.getLastUpdateTime(),o1.getLastUpdateTime()));
         else
             System.out.println("TODO : use sort!!!");
 
@@ -94,6 +94,13 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
                     tradesList.add(trade);
                     System.out.println("added to cache. size " + tradesList.size());      // TODO sort/filter the cache
 
+                    if (!blotterSubscriptionRequest.hasSortQuery()) { // apply Default sort : Refactor
+                        System.out.println("sorting...");
+                        tradesList.sort((o1, o2) -> Long.compare(o2.getLastUpdateTime(), o1.getLastUpdateTime()));
+                        System.out.println("sorted");
+                    } else
+                        System.out.println("TODO : use sort!!!");
+
                     TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                             TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
                                     .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest))
@@ -103,14 +110,16 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
                     //System.out.println("published portfolioSubscriptionResponseMessage->BlotterSubscriptionResponse for responseObserver " + outStream.hashCode() +
                     //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
 
-                    portfolioSubscriptionResponseMessage =
-                            TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-                                    .setBlotterFillResponse(buildBlotterFillResponse(blotterFillRequest))
-                                    .build();
-                    outStream.onNext(portfolioSubscriptionResponseMessage);
-                    System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode());
-                    //System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode() +
-                    //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
+                    if (blotterFillRequest != null) {
+                        portfolioSubscriptionResponseMessage =
+                                TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
+                                        .setBlotterFillResponse(buildBlotterFillResponse(blotterFillRequest))
+                                        .build();
+                        outStream.onNext(portfolioSubscriptionResponseMessage);
+                        System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode());
+                        //System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode() +
+                        //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
+                    }
                 },
                 onError -> {
                     System.out.println("error " + onError);
@@ -255,6 +264,18 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
         this.outStream.onCompleted();
     }
 
+    public static void main(String[] args) {
+        List<Long> longList = Arrays.asList(4L, 2L, 3L, 5L, 1L);
+
+        System.out.println("before>>>"+longList);
+        longList.sort((o1, o2) -> Long.compare(o1,o2));
+        System.out.println("after>>>"+longList);
+
+        List<Integer> numbers = Arrays.asList(5, 3, 2, 4, 1);
+        numbers.sort(null);
+        System.out.println(numbers); // prints [1, 2, 3, 4, 5]
+    }
+
 }
 
 class SummaryKPI    {
@@ -266,3 +287,4 @@ class SummaryKPI    {
         this.volume = volume;
     }
 }
+
