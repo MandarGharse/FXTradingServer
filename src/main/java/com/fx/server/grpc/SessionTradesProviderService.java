@@ -63,6 +63,11 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
         // TODO : only pull based on Criteria/filter
         List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
+        if (blotterSubscriptionRequest.getSortQuery() == null)  // apply Default sort : Refactor
+            tradesListtemp.sort((o1, o2) -> o1.getLastUpdateTime() > o2.getLastUpdateTime() ? 1 : 0);
+        else
+            System.out.println("TODO : use sort!!!");
+
         tradesList.clear();
         tradesList.addAll(tradesListtemp);
 

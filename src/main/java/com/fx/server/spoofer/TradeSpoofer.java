@@ -36,6 +36,8 @@ public class TradeSpoofer {
                 .setValueDate(dates[random.nextInt(dates.length)])
                 .setFixingDate(dates[random.nextInt(dates.length)])
                 .setUsdAmount(random.nextDouble(5000000.00))
+                .setCreateTime(System.currentTimeMillis())
+                .setLastUpdateTime(System.currentTimeMillis())
                 .build();
 
         return trade;

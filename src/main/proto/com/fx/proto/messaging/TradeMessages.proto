@@ -13,6 +13,8 @@ message Trade   {
     string value_date = 8;
     string fixing_date = 9;
     double usd_amount = 10;
+    uint64 createTime = 11;
+    uint64 lastUpdateTime = 12;
 }
 
 //message TradesSubscriptionRequestMessage{
