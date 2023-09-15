@@ -7,6 +7,7 @@ import com.fx.server.cache.TradesCache;
 import com.fx.server.listener.TradesListener;
 import io.grpc.stub.StreamObserver;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
+import org.springframework.util.comparator.Comparators;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,13 +64,14 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
         // TODO : only pull based on Criteria/filter
         List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
-        if (!blotterSubscriptionRequest.hasSortQuery())  // apply Default sort : Refactor
-            tradesListtemp.sort((o1, o2) -> Long.compare(o2.getLastUpdateTime(),o1.getLastUpdateTime()));
-        else
+        List<TradeMessages.Trade> tradesListtemp2 = tradesListtemp.stream().collect(Collectors.toList());
+        if (!blotterSubscriptionRequest.hasSortQuery()) {  // apply Default sort : Refactor
+            Collections.sort(tradesListtemp2, (o1, o2) -> Long.compare(o2.getLastUpdateTime(), o1.getLastUpdateTime()));
+        }   else
             System.out.println("TODO : use sort!!!");
 
         tradesList.clear();
-        tradesList.addAll(tradesListtemp);
+        tradesList.addAll(tradesListtemp2);
 
         sendBlotterSubscriptionSnapshot(blotterSubscriptionRequest);
     }
@@ -150,9 +152,11 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
     }
 
     private void sendBlotterSubscriptionSnapshot(TradeMessages.BlotterSubscriptionRequest blotterSubscriptionRequest) {
+        System.out.println("sendBlotterSubscriptionSnapshot called");
         TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
                 TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
                         .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest)).build();
+        System.out.println("portfolioSubscriptionResponseMessage built " + portfolioSubscriptionResponseMessage);
         outStream.onNext(portfolioSubscriptionResponseMessage);
         System.out.println("blotter subscription snapshot sent to responseObserver " + outStream.hashCode());
     }
@@ -265,15 +269,12 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
     }
 
     public static void main(String[] args) {
-        List<Long> longList = Arrays.asList(4L, 2L, 3L, 5L, 1L);
+        List<Integer> longList = Arrays.asList(4, 2, 3, 5, 1);
 
         System.out.println("before>>>"+longList);
-        longList.sort((o1, o2) -> Long.compare(o1,o2));
+        Collections.sort(longList, (o1, o2) -> Integer.compare(o2, o1));
         System.out.println("after>>>"+longList);
 
-        List<Integer> numbers = Arrays.asList(5, 3, 2, 4, 1);
-        numbers.sort(null);
-        System.out.println(numbers); // prints [1, 2, 3, 4, 5]
     }
 
 }
