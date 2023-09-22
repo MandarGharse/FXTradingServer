@@ -4,6 +4,8 @@ import com.fx.common.utils.DateUtils;
 import com.fx.proto.messaging.TradeMessages;
 import com.fx.server.listener.TradesListener;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 public class TradeSpoofer {
@@ -30,8 +32,8 @@ public class TradeSpoofer {
                 .setCcyPair(ccyPair)
                 .setBuySell(buySell)
                 .setDealtCcy(dealtCcys[random.nextInt(dealtCcys.length)])
-                .setDealtAmount(random.nextDouble(1000000.00))
-                .setCounterAmount(random.nextDouble(2000000.00))
+                .setDealtAmount(round(random.nextDouble(1000000.00), 2))
+                .setCounterAmount(round(random.nextDouble(2000000.00), 2))
                 .setTradeDate(dates[random.nextInt(dates.length)])
                 .setValueDate(dates[random.nextInt(dates.length)])
                 .setFixingDate(dates[random.nextInt(dates.length)])
@@ -41,6 +43,12 @@ public class TradeSpoofer {
                 .build();
 
         return trade;
+    }
+
+    static DecimalFormat df = new DecimalFormat("0.00");
+    static double round(double d, int scale)   {
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(d));
     }
 
 }

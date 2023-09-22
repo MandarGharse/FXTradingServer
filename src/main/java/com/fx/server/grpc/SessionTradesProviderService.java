@@ -4,6 +4,7 @@ import com.fx.common.enums.KPILabel;
 import com.fx.common.utils.DateUtils;
 import com.fx.proto.messaging.TradeMessages;
 import com.fx.server.cache.TradesCache;
+import com.fx.server.comparators.DefaultComparator;
 import com.fx.server.listener.TradesListener;
 import io.grpc.stub.StreamObserver;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
@@ -66,7 +67,8 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
         List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
         List<TradeMessages.Trade> tradesListtemp2 = tradesListtemp.stream().collect(Collectors.toList());
         if (!blotterSubscriptionRequest.hasSortQuery()) {  // apply Default sort : Refactor
-            Collections.sort(tradesListtemp2, (o1, o2) -> Long.compare(o2.getLastUpdateTime(), o1.getLastUpdateTime()));
+            Collections.sort(tradesListtemp2,
+                    Comparator.comparing(TradeMessages.Trade::getLastUpdateTime).reversed());
         }   else
             System.out.println("TODO : use sort!!!");
 
@@ -98,7 +100,7 @@ public class SessionTradesProviderService implements StreamObserver<TradeMessage
 
                     if (!blotterSubscriptionRequest.hasSortQuery()) { // apply Default sort : Refactor
                         System.out.println("sorting...");
-                        tradesList.sort((o1, o2) -> Long.compare(o2.getLastUpdateTime(), o1.getLastUpdateTime()));
+                        tradesList.sort(Comparator.comparing(TradeMessages.Trade::getLastUpdateTime).reversed());
                         System.out.println("sorted");
                     } else
                         System.out.println("TODO : use sort!!!");
