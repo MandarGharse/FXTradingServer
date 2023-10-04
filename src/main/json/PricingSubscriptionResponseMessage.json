@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "fxQuote": {
+      "type": "object",
+      "properties": {
+        "bidRate": {"type": "integer"},
+        "askRate": {"type": "integer"}
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "sessionId": {"type": "string"},
+    "id": {"type": "string"},
+    "ccyPair": {"type": "string"},
+    "valueDate": {"type": "string"},
+    "status": {"type": "string"},
+    "rejectText": {"type": "string"},
+    "quote": {"$ref": "#definitions/fxQuote"}
+  }
+}

@@ -22,6 +22,8 @@ public class GrpcServer {
 
     @Autowired
     GrpcService grpcService;
+    @Autowired
+    GrpcPricingService grpcPricingService;
 
     public void startServer() throws IOException {
         io.netty.channel.EventLoopGroup epollEventLoopGroupBoss = new DefaultEventLoopGroup();
@@ -34,6 +36,7 @@ public class GrpcServer {
                 //.channelType(nioSocketChannel)
                 .executor(ExecutorWorkerAppPool.getInstance().getExecutor())
                 .addService(ServerInterceptors.intercept(grpcService, new EnableCompressionInterceptor()))
+                .addService(ServerInterceptors.intercept(grpcPricingService, new EnableCompressionInterceptor()))
                 .build().start();
     }
 

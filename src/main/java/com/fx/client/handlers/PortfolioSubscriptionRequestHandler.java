@@ -26,8 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PortfolioSubscriptionRequestHandler {
     @Autowired
     StompEnhancedMessageSender stompEnhancedMessageSender;
-    @Autowired
-    GrpcClientManager grpcClientManagerPortfolio;
 
     private JsonFormat.Printer jsonPrinter = JsonFormat.printer()
             .includingDefaultValueFields()
@@ -38,8 +36,8 @@ public class PortfolioSubscriptionRequestHandler {
             portfolioSubscriptionRequestMessageStreamObserverMap;
 
     @Autowired
-    public PortfolioSubscriptionRequestHandler() {
-        grpcClient = grpcClientManagerPortfolio.getGrpcClient(GrpcClientId.TRADES);  // GRPC subscription
+    public PortfolioSubscriptionRequestHandler(GrpcClientManager grpcClientManager) {
+        grpcClient = grpcClientManager.createGrpcClient(GrpcClientId.TRADES);  // GRPC subscription
         System.out.println("retrieved grpc client handle " + grpcClient);
         portfolioSubscriptionRequestMessageStreamObserverMap = new ConcurrentHashMap<>();
     }
@@ -137,7 +135,9 @@ public class PortfolioSubscriptionRequestHandler {
                     };
 
             StreamObserver<TradeMessages.PortfolioSubscriptionRequestMessage> portfolioSubscriptionRequestMessageStreamObserver =
-                    subscribePortfolio(stompPrincipal.getName(), grpcClient.getAsyncTradeServicesStub(), portfolioSubscriptionResponseStreamObserver);
+                    subscribePortfolio(stompPrincipal.getName(),
+                            (TradeServicesGrpc.TradeServicesStub) grpcClient.getAsyncServicesStub(),
+                            portfolioSubscriptionResponseStreamObserver);
 
             portfolioSubscriptionRequestMessageStreamObserverMap.put(stompPrincipal.getName(), portfolioSubscriptionRequestMessageStreamObserver);
             System.out.println("created new PortfolioSubscriptionRequestMessageStreamObserve for sessionId " + stompPrincipal.getName());

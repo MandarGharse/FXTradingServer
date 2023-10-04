@@ -17,22 +17,6 @@ message Trade   {
     uint64 lastUpdateTime = 12;
 }
 
-//message TradesSubscriptionRequestMessage{
-//    string session_key = 1;
-//}
-//
-//message TradesSubscriptionResponseMessage    {
-//    string session_key = 1;
-//    TradeSummary summary = 2;
-//    repeated Trade trades = 3;
-//}
-//
-//message TradeSummary    {
-//    uint32 total_trades = 1;
-//    uint32 trades_valuedate_today = 2;
-//    uint32 trades_tradedate_today = 3;
-//}
-
 message PortfolioSubscriptionRequestMessage {
     oneof request_message   {
         BlotterSubscriptionRequest blotter_subscription_request = 1;

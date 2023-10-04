@@ -1,10 +1,7 @@
 package com.fx.client.session;
 
 import com.fx.client.websocket.StompPrincipal;
-import com.fx.domain.json.BlotterFillRequestMessage;
-import com.fx.domain.json.BlotterSubscriptionRequestMessage;
-import com.fx.domain.json.TradeResolutionRequestMessage;
-import com.fx.domain.json.TradesSubscriptionRequestMessage;
+import com.fx.domain.json.*;
 import com.fx.proto.messaging.TradeMessages;
 
 public class UserSession {
@@ -13,6 +10,8 @@ public class UserSession {
     BlotterSubscriptionRequestMessage blotterSubscriptionRequestMessage;
     BlotterFillRequestMessage blotterFillRequestMessage;
     TradeResolutionRequestMessage tradeResolutionRequestMessage;
+
+    PricingSubscriptionRequestMessage pricingSubscriptionRequestMessage;
 
     // Any other UserSession related data
 
@@ -28,7 +27,12 @@ public class UserSession {
                 ", blotterSubscriptionRequestMessage=" + blotterSubscriptionRequestMessage +
                 ", blotterFillRequestMessage=" + blotterFillRequestMessage +
                 ", tradeResolutionRequestMessage=" + tradeResolutionRequestMessage +
+                ", pricingSubscriptionRequestMessage=" + pricingSubscriptionRequestMessage +
                 '}';
+    }
+
+    public void setPricingSubscriptionRequestMessage(PricingSubscriptionRequestMessage pricingSubscriptionRequestMessage) {
+        this.pricingSubscriptionRequestMessage = pricingSubscriptionRequestMessage;
     }
 
     public void setFXTradesRequest(TradesSubscriptionRequestMessage tradesSubscriptionRequestMessage) {
