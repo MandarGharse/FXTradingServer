@@ -3,8 +3,11 @@ syntax = "proto3";
 package com.fx.proto.messaging;
 
 message Price   {
-    double bid_rate = 1;
-    double ask_rate = 2;
+    string id = 1;
+    string ccy_pair = 2;
+    string value_date = 3;
+    double bid_rate = 4;
+    double ask_rate = 5;
 }
 
 message PricingSubscriptionRequestMessage {

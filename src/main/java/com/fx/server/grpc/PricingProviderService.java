@@ -1,23 +1,19 @@
 package com.fx.server.grpc;
 
-import com.fx.common.enums.KPILabel;
 import com.fx.common.utils.DateUtils;
 import com.fx.proto.messaging.PricingMessages;
 import com.fx.proto.messaging.TradeMessages;
-import com.fx.server.cache.TradesCache;
-import com.fx.server.listener.TradesListener;
+import com.fx.server.cache.PricingCache;
+import com.fx.server.listener.PricingListener;
 import io.grpc.stub.StreamObserver;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PricingProviderService implements StreamObserver<PricingMessages.PricingSubscriptionRequestMessage>, Disposable {
 
     StreamObserver<PricingMessages.PricingSubscriptionResponseMessage> outStream;
     PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequest;
-
-    List<PricingMessages.Price> tradesList = new ArrayList<>();   // list of price tile
 
     private boolean isDisposed = false;
 
@@ -27,7 +23,7 @@ public class PricingProviderService implements StreamObserver<PricingMessages.Pr
         super();
         this.outStream = responseObserver;
 
-        //processEvent();
+        processEvent();
     }
 
     @Override
@@ -54,73 +50,66 @@ public class PricingProviderService implements StreamObserver<PricingMessages.Pr
         System.out.println("processing pricingSubscriptionRequest " + pricingSubscriptionRequest);
         this.pricingSubscriptionRequest = pricingSubscriptionRequest;
 
-        // TODO : only pull based on Criteria/filter
-        List<TradeMessages.Trade> tradesListtemp = (List<TradeMessages.Trade>) TradesCache.getInstance().getTradesCache().values();
-        List<TradeMessages.Trade> tradesListtemp2 = tradesListtemp.stream().collect(Collectors.toList());
-
-
-        sendPricingSubscriptionSnapshot(pricingSubscriptionRequest);
+        PricingMessages.Price price = PricingCache.getInstance().getItem(
+                pricingSubscriptionRequest.getCcyPair(), pricingSubscriptionRequest.getValueDate());
+        if (price != null)
+            sendPricingSubscriptionSnapshot(pricingSubscriptionRequest, price);
     }
 
-    private void sendPricingSubscriptionSnapshot(PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequest) {
+    private void sendPricingSubscriptionSnapshot(PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequest, PricingMessages.Price price) {
         System.out.println("sendPricingSubscriptionSnapshot called");
         PricingMessages.PricingSubscriptionResponseMessage pricingSubscriptionResponseMessage =
                 PricingMessages.PricingSubscriptionResponseMessage.newBuilder()
-                        .setPricingSubscriptionResponse(buildPricingSubscriptionResponse(pricingSubscriptionRequest)).build();
+                        .setPricingSubscriptionResponse(buildPricingSubscriptionResponse(pricingSubscriptionRequest, price)).build();
         System.out.println("pricingSubscriptionResponseMessage built " + pricingSubscriptionResponseMessage);
         outStream.onNext(pricingSubscriptionResponseMessage);
         System.out.println("pricing subscription snapshot sent to responseObserver " + outStream.hashCode());
     }
 
-    private PricingMessages.PricingSubscriptionResponse buildPricingSubscriptionResponse(PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequest)    {
+    private PricingMessages.PricingSubscriptionResponse buildPricingSubscriptionResponse(PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequest,
+                                                                                         PricingMessages.Price price)    {
         return PricingMessages.PricingSubscriptionResponse.newBuilder()
                 .setSessionKey(pricingSubscriptionRequest.getSessionKey())
                 .setId(pricingSubscriptionRequest.getId())
                 .setCcyPair(pricingSubscriptionRequest.getCcyPair())
                 .setValueDate(pricingSubscriptionRequest.getValueDate())
-                .setPrice(PricingMessages.Price.newBuilder().setBidRate(1.1234).setAskRate(1.1244).build())
+                .setPrice(PricingMessages.Price.newBuilder().setBidRate(price.getBidRate()).setAskRate(price.getAskRate()).build())
                 .setSuccess(true)
                 .build();
     }
 
-//    private void processEvent() {
-//        TradesListener.getInstance().getTradeSubject().subscribe(tradeObj -> {
-//                    TradeMessages.Trade trade = (TradeMessages.Trade) tradeObj;
-//                    tradesList.add(trade);
-//                    System.out.println("added to cache. size " + tradesList.size());      // TODO sort/filter the cache
-//
-//                    if (!blotterSubscriptionRequest.hasSortQuery()) { // apply Default sort : Refactor
-//                        System.out.println("sorting...");
-//                        tradesList.sort(Comparator.comparing(TradeMessages.Trade::getLastUpdateTime).reversed());
-//                        System.out.println("sorted");
-//                    } else
-//                        System.out.println("TODO : use sort!!!");
-//
-//                    TradeMessages.PortfolioSubscriptionResponseMessage portfolioSubscriptionResponseMessage =
-//                            TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-//                                    .setBlotterSubscriptionResponse(buildBlotterSubscriptionResponse(blotterSubscriptionRequest))
-//                                    .build();
-//                    outStream.onNext(portfolioSubscriptionResponseMessage);
-//                    System.out.println("published portfolioSubscriptionResponseMessage->BlotterSubscriptionResponse for responseObserver " + outStream.hashCode());
-//                    //System.out.println("published portfolioSubscriptionResponseMessage->BlotterSubscriptionResponse for responseObserver " + outStream.hashCode() +
-//                    //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
-//
-//                    if (blotterFillRequest != null) {
-//                        portfolioSubscriptionResponseMessage =
-//                                TradeMessages.PortfolioSubscriptionResponseMessage.newBuilder()
-//                                        .setBlotterFillResponse(buildBlotterFillResponse(blotterFillRequest))
-//                                        .build();
-//                        outStream.onNext(portfolioSubscriptionResponseMessage);
-//                        System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode());
-//                        //System.out.println("published portfolioSubscriptionResponseMessage->BlotterFillResponse for responseObserver " + outStream.hashCode() +
-//                        //        ". portfolioSubscriptionResponseMessage : " + portfolioSubscriptionResponseMessage);
-//                    }
-//                },
-//                onError -> {
-//                    System.out.println("error " + onError);
-//                }
-//        );
-//    }
+    private void processEvent() {
+        PricingListener.getInstance().getPricingSubject().subscribe(priceObj -> {
+                    System.out.println("received price : " + priceObj);
+                    System.out.println("for pricingSubscriptionRequest : " + pricingSubscriptionRequest);
+                    PricingMessages.Price price = (PricingMessages.Price) priceObj;
+
+                    // TODO : Check if user subscribed for ccyPair, valueDate before sending
+                    if (pricingSubscriptionRequest.getCcyPair().equals(price.getCcyPair()) &&
+                    pricingSubscriptionRequest.getValueDate().equals(price.getValueDate())) {
+                        PricingMessages.PricingSubscriptionResponseMessage pricingSubscriptionResponseMessage =
+                                PricingMessages.PricingSubscriptionResponseMessage.newBuilder()
+                                        .setPricingSubscriptionResponse(
+                                                PricingMessages.PricingSubscriptionResponse.newBuilder()
+                                                        .setSessionKey(pricingSubscriptionRequest.getSessionKey())
+                                                        .setId(pricingSubscriptionRequest.getId())
+                                                        .setCcyPair(pricingSubscriptionRequest.getCcyPair())
+                                                        .setValueDate(pricingSubscriptionRequest.getValueDate())
+                                                        .setPrice(PricingMessages.Price.newBuilder()
+                                                                .setBidRate(price.getBidRate())
+                                                                .setAskRate(price.getAskRate()).build())
+                                                        .setSuccess(true).build())
+                                        .build();
+
+                        outStream.onNext(pricingSubscriptionResponseMessage);
+                        System.out.println("published pricingSubscriptionResponseMessage-> for responseObserver " + outStream.hashCode());
+                    }
+                },
+                onError -> {
+                    System.out.println("error " + onError);
+                }
+        );
+    }
 
     @Override
     public void onError(Throwable throwable) {

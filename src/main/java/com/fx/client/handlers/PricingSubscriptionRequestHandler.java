@@ -6,16 +6,13 @@ import com.fx.client.websocket.StompPrincipal;
 import com.fx.client.websocket.endpoints.SubscriptionEndPoints;
 import com.fx.common.enums.GrpcClientId;
 import com.fx.proto.messaging.PricingMessages;
-import com.fx.proto.messaging.TradeMessages;
 import com.fx.proto.services.PricingServicesGrpc;
-import com.fx.proto.services.TradeServicesGrpc;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fx.domain.json.PricingSubscriptionRequestMessage;
-import com.fx.domain.json.PricingSubscriptionResponseMessage;
 
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +41,7 @@ public class PricingSubscriptionRequestHandler {
         System.out.println("processing onPricingSubscriptionRequest " + pricingSubscriptionRequestMessage);
 
         StreamObserver<PricingMessages.PricingSubscriptionRequestMessage> pricingSubscriptionRequestMessageStreamObserver =
-                getOrCreatePricingSubscriptionRequestMessageStreamObserver(stompPrincipal);
+                getOrCreatePricingSubscriptionRequestMessageStreamObserver(stompPrincipal, pricingSubscriptionRequestMessage.getId());
 
         PricingMessages.PricingSubscriptionRequest pricingSubscriptionRequestProto = PricingMessages.PricingSubscriptionRequest.newBuilder()
                 .setSessionKey(pricingSubscriptionRequestMessage.getSessionId())
@@ -62,11 +59,11 @@ public class PricingSubscriptionRequestHandler {
     }
 
     private StreamObserver<PricingMessages.PricingSubscriptionRequestMessage> getOrCreatePricingSubscriptionRequestMessageStreamObserver(
-            StompPrincipal stompPrincipal) {
+            StompPrincipal stompPrincipal, String id) {
 
         synchronized (pricingSubscriptionRequestMessageStreamObserverMap) {
-            if ((pricingSubscriptionRequestMessageStreamObserverMap.get(stompPrincipal.getName()) != null))
-                return (pricingSubscriptionRequestMessageStreamObserverMap.get(stompPrincipal.getName()));
+            if ((pricingSubscriptionRequestMessageStreamObserverMap.get(stompPrincipal.getName()+id) != null))
+                return (pricingSubscriptionRequestMessageStreamObserverMap.get(stompPrincipal.getName()+id));
 
             System.out.println("creating new PricingSubscriptionRequestMessageStreamObserve for sessionId " + stompPrincipal.getName());
 
@@ -74,6 +71,7 @@ public class PricingSubscriptionRequestHandler {
                     new StreamObserver<>() {
                         @Override
                         public void onNext(PricingMessages.PricingSubscriptionResponseMessage pricingSubscriptionResponseMessage) {
+                            System.out.println("received pricingSubscriptionResponseMessage >>> " + pricingSubscriptionResponseMessage);
                             eventConsumer.accept(pricingSubscriptionResponseMessage, stompPrincipal.getName());
                         }
 
@@ -93,8 +91,8 @@ public class PricingSubscriptionRequestHandler {
                             (PricingServicesGrpc.PricingServicesStub) grpcClient.getAsyncServicesStub(),
                             pricingSubscriptionResponseStreamObserver);
 
-            pricingSubscriptionRequestMessageStreamObserverMap.put(stompPrincipal.getName(), pricingSubscriptionRequestMessageStreamObserver);
-            System.out.println("created new pricingSubscriptionRequestMessageStreamObserverMap for sessionId " + stompPrincipal.getName());
+            pricingSubscriptionRequestMessageStreamObserverMap.put(stompPrincipal.getName()+id, pricingSubscriptionRequestMessageStreamObserver);
+            System.out.println("created new pricingSubscriptionRequestMessageStreamObserverMap for sessionId, id " + stompPrincipal.getName() + " " + id);
 
             return pricingSubscriptionRequestMessageStreamObserver;
         }
