@@ -28,7 +28,8 @@ public class CurrencyPairListProvider   {
     @RequestMapping(value = "/gatewaywebsocket"+ SubscriptionEndPoints.CURRENCYPAIR_ENDPOINT, method = RequestMethod.GET)
     public CurrencyPairs handleRequest(@RequestHeader(LOGIN_ID) String userId)  {
 
-        CurrencyPairs currencyPairs = new CurrencyPairs(currencyPairList);
+        CurrencyPairs currencyPairs = new CurrencyPairs();
+        currencyPairs.setCurrencyPairs(currencyPairList);
         return currencyPairs;
     }
 

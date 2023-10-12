@@ -1,0 +1,90 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.4'
+    id 'io.spring.dependency-management' version '1.1.3'
+    id 'org.jsonschema2pojo' version "1.2.1"
+    id "com.google.protobuf" version "0.8.17"
+}
+
+group = 'com.fx.application'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.integration:spring-integration-http'
+    implementation 'org.jsonschema2pojo:jsonschema2pojo-core:1.0.1'
+    implementation 'com.google.protobuf:protobuf-java:3.18.1'
+    implementation 'io.grpc:grpc-protobuf:1.32.1'
+    implementation 'io.grpc:grpc-stub:1.32.1'
+    implementation 'io.grpc:grpc-netty:1.32.1'
+    implementation 'com.google.protobuf:protobuf-java-util:3.4.0'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'org.springframework:spring-websocket:6.0.11'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'org.codehaus.plexus:plexus-personalities:1.1.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+jsonSchema2Pojo {
+    source = files("src/main/json")
+    targetDirectory = file("target/generated-sources/src/main/java") // required for IDEs to pick it up as a source root
+    targetPackage = 'com.fx.domain.json'
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+        }
+        java {
+            // include self written and generated code
+            srcDirs 'src/main/java', 'generated-sources/main/java'
+        }
+    }
+    // remove the test configuration - at least in your example you don't have a special test proto file
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:4.0.0-rc-2'
+        plugins{
+            grpc {artifact = "io.grpc:protoc-gen-grpc-java:1.31.1"}
+        }
+        generateProtoTasks{
+            all()*.plugins {grpc {}}
+        }
+    }
+
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.39.0"
+        }
+    }
+    generateProtoTasks.generatedFilesBaseDir = 'target/generated-sources/src'
+
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins { grpc{} }
+        }
+        ofSourceSet('main')
+
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.withType(Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

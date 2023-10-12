@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "com/fx/proto/messaging/PricingMessages.proto";
+
+package com.fx.proto.services;
+
+service PricingServices {
+
+  rpc SubscribePricing(stream com.fx.proto.messaging.PricingSubscriptionRequestMessage)
+      returns (stream com.fx.proto.messaging.PricingSubscriptionResponseMessage);
+
+}

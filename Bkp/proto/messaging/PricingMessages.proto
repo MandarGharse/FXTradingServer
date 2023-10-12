@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package com.fx.proto.messaging;
+
+message Price   {
+    string id = 1;
+    string ccy_pair = 2;
+    string value_date = 3;
+    double bid_rate = 4;
+    double ask_rate = 5;
+}
+
+message PricingSubscriptionRequestMessage {
+    oneof request_message   {
+        PricingSubscriptionRequest pricing_subscription_request = 1;
+    }
+}
+
+message PricingSubscriptionResponseMessage {
+    oneof request_message   {
+        PricingSubscriptionResponse pricing_subscription_response = 1;
+    }
+}
+
+message PricingSubscriptionRequest  {
+    string session_key = 1;
+    string id = 2;
+    string ccy_pair = 3;
+    string value_date = 4;
+}
+
+message PricingSubscriptionResponse  {
+    string session_key = 1;
+    string id = 2;
+    string ccy_pair = 3;
+    string value_date = 4;
+    Price price = 5;
+    bool success = 6;
+    string error_message = 7;
+}
+
