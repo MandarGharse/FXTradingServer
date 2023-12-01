@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
-@PropertySource(value = {"file:///${HOMEDIR}/application.client.properties"})
+//@PropertySource(value = {"file:///${HOMEDIR}/application.client.properties"})
+@PropertySource("classpath:application.client.properties")
 @ImportResource("classpath:META-INF\\spring\\client\\spring-context.xml")
 @PropertySource({
         "classpath:environment-independent.properties"

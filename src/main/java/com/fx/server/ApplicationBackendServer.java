@@ -12,8 +12,9 @@ import org.springframework.context.annotation.PropertySource;
 
 import java.io.IOException;
 
-@PropertySource(value = {"file:///${HOMEDIR}/application.server.properties"})
+//@PropertySource(value = {"file:///${HOMEDIR}/application.server.properties"})
 @ImportResource("classpath:META-INF\\spring\\server\\spring-context.xml")
+@PropertySource("classpath:application.server.properties")
 @PropertySource({
         "classpath:environment-independent.properties"
 })
