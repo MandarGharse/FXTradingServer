@@ -7,13 +7,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <artifactId>fxApplication</artifactId>
     <version>1.1</version>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-
     <properties>
         <java.version>17</java.version>
         <tomcat.version>8.0.3</tomcat.version>
@@ -30,36 +23,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>10.1.11</version>
-        </dependency>
-
-        <!--
-        <dependency>
-            <groupId>jakarta.websocket</groupId>
-            <artifactId>jakarta.websocket-all</artifactId>
-            <version>2.1.0</version>
-            <type>pom</type>
-        </dependency>
-        -->
-
-        <!-- https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-client-api -->
-        <dependency>
-            <groupId>jakarta.websocket</groupId>
-            <artifactId>jakarta.websocket-client-api</artifactId>
-            <version>2.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-api -->
-        <dependency>
-            <groupId>jakarta.websocket</groupId>
-            <artifactId>jakarta.websocket-api</artifactId>
-            <version>2.1.0</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <!-- Import dependency management from Spring Boot -->
@@ -90,7 +53,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>spring-messaging</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -294,25 +256,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                         <version>6.2</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.fx.server.ApplicationBackendServer</mainClass>
-<!--                            <mainClass>com.fx.client.ApplicationGatewayServer</mainClass>-->
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
         </plugins>
