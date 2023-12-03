@@ -168,7 +168,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     <refFragmentPathDelimiters>#/</refFragmentPathDelimiters>
                     <sourceType>jsonschema</sourceType>
                     <sourceDirectory>${basedir}/src/main/json</sourceDirectory>
-                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
+                    <outputDirectory>${basedir}/target/generated-sources/src/main/java</outputDirectory>
                     <targetPackage>${json.target.package}</targetPackage>
                     <annotationStyle>jackson2</annotationStyle>
                     <usePrimitives>true</usePrimitives>
@@ -194,16 +194,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <additionalProtoPathElements>
-                        <additionalProtoPathElement>${project.basedir}/src/main/proto</additionalProtoPathElement>
-                    </additionalProtoPathElements>
+<!--                    <additionalProtoPathElements>-->
+<!--                        <additionalProtoPathElement>${project.basedir}/src/main/proto</additionalProtoPathElement>-->
+<!--                    </additionalProtoPathElements>-->
                     <protocArtifact>
                         com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
                     </protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
                     </pluginArtifact>
-                    <attachProtoSources>true</attachProtoSources>
+                    <attachProtoSources>false</attachProtoSources>
                     <includeDependenciesInDescriptorSet>true</includeDependenciesInDescriptorSet>
                     <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
                 </configuration>
@@ -219,7 +219,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             </plugin>
 
             <!-- Add the generated sources to the build -->
-            <plugin>
+            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.4.0</version>
@@ -238,7 +238,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

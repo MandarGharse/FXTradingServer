@@ -13,7 +13,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="fxApplication" options="-parameters" />
+      <module name="fxApplication" options="" />
     </option>
   </component>
 </project>
