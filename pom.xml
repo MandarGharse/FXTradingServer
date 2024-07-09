@@ -302,8 +302,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <configuration>
                     <archive>
                         <manifest>
-<!--                            <mainClass>com.fx.server.ApplicationBackendServer</mainClass>-->
-                             <mainClass>com.fx.client.ApplicationGatewayServer</mainClass>
+                            <mainClass>com.fx.server.ApplicationBackendServer</mainClass>
+<!--                             <mainClass>com.fx.client.ApplicationGatewayServer</mainClass>-->
 <!--                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
                         </manifest>
                     </archive>

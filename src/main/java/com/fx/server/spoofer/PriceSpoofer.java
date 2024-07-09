@@ -23,8 +23,14 @@ public class PriceSpoofer {
         String ccyPair = ccyPairs[random.nextInt(ccyPairs.length)];
         System.out.println("spoofing price for ccyPair " + ccyPair);
 
-        double bidRate = getBidRateByCcyPair(ccyPair).first;
-        double askRate = getBidRateByCcyPair(ccyPair).second;
+        double bidRate = getRateByCcyPair(ccyPair).first;
+        double askRate = getRateByCcyPair(ccyPair).second;
+        double temp;
+        if (bidRate > askRate)  {
+            temp = bidRate;
+            bidRate = askRate;
+            askRate = temp;
+        }
         PricingMessages.Price price = PricingMessages.Price.newBuilder()
                 .setId(UUID.randomUUID().toString())    // quoteId
                 .setCcyPair(ccyPair)
@@ -37,7 +43,7 @@ public class PriceSpoofer {
         return price;
     }
 
-    private static Pair getBidRateByCcyPair(String ccyPair) {
+    private static Pair getRateByCcyPair(String ccyPair) {
         if ("EUR/USD".equals(ccyPair))  {
             double v = random.nextDouble(1.1012, 1.2500);
             return new Pair(
